@@ -7,12 +7,33 @@ using NPinyin;
 namespace ExcelToSql
 {
     /// <summary>
+    /// 拼音转换模式
+    /// </summary>
+    public enum PinyinMode
+    {
+        /// <summary>
+        /// 全拼模式（如：PingZhengRiQi）
+        /// </summary>
+        FullPinyin,
+        
+        /// <summary>
+        /// 首字母模式（如：PZRQ）
+        /// </summary>
+        FirstLetter
+    }
+
+    /// <summary>
     /// 列名转换辅助类（集成NPinyin库 + 智能词汇映射）
     /// </summary>
     public class PinyinHelper
     {
         private static Dictionary<string, string> commonNameDict = new Dictionary<string, string>();
         private static Dictionary<char, string> pinyinDict = new Dictionary<char, string>();
+        
+        /// <summary>
+        /// 当前拼音转换模式（默认全拼）
+        /// </summary>
+        public static PinyinMode CurrentMode { get; set; } = PinyinMode.FullPinyin;
 
         static PinyinHelper()
         {
@@ -23,18 +44,21 @@ namespace ExcelToSql
         /// <summary>
         /// 将中文字符串转换为拼音（优先使用常用词汇映射，备用NPinyin）
         /// </summary>
-        public static string ConvertToPinyin(string chinese)
+        /// <param name="chinese">中文字符串</param>
+        /// <param name="mode">拼音模式（可选，默认使用全局设置）</param>
+        public static string ConvertToPinyin(string chinese, PinyinMode? mode = null)
         {
             if (string.IsNullOrEmpty(chinese))
                 return "Col";
 
+            PinyinMode useMode = mode ?? CurrentMode;
             string trimmed = chinese.Trim();
             
             // 优先级1：完全匹配常用词汇（标准英文命名）
-            if (commonNameDict.ContainsKey(trimmed))
-            {
-                return commonNameDict[trimmed];
-            }
+            //if (commonNameDict.ContainsKey(trimmed))
+            //{
+            //    return commonNameDict[trimmed];
+            //}
 
             // 优先级2：尝试匹配部分常用词汇（如："员工姓名"中包含"姓名"）
             foreach (var kvp in commonNameDict)
@@ -47,53 +71,72 @@ namespace ExcelToSql
                         return kvp.Value;
                     
                     // 对剩余部分使用NPinyin转换
-                    string remainingConverted = ConvertByNPinyin(remaining);
+                    string remainingConverted = ConvertByNPinyin(remaining, useMode);
                     if (!string.IsNullOrEmpty(remainingConverted))
                         return remainingConverted + kvp.Value;
                 }
             }
 
             // 优先级3：使用NPinyin库转换（支持20000+汉字）
-            string result = ConvertByNPinyin(trimmed);
+            string result = ConvertByNPinyin(trimmed, useMode);
             if (!string.IsNullOrEmpty(result) && result != "Col")
                 return result;
 
             // 优先级4：降级到内置拼音字典
-            return ConvertByPinyin(trimmed);
+            return ConvertByPinyin(trimmed, useMode);
         }
 
         /// <summary>
         /// 使用NPinyin库转换（完整汉字支持）
         /// </summary>
-        private static string ConvertByNPinyin(string text)
+        private static string ConvertByNPinyin(string text, PinyinMode mode)
         {
             if (string.IsNullOrEmpty(text))
                 return "Col";
 
             try
             {
-                // 使用NPinyin转换为拼音（无空格）
-                string pinyin = Pinyin.GetPinyin(text);
-                if (string.IsNullOrEmpty(pinyin))
+                string result;
+                
+                if (mode == PinyinMode.FirstLetter)
+                {
+                    // 首字母模式
+                    result = Pinyin.GetInitials(text);
+                }
+                else
+                {
+                    // 全拼模式
+                    result = Pinyin.GetPinyin(text);
+                    // 移除空格
+                    result = result.Replace(" ", "");
+                }
+                
+                if (string.IsNullOrEmpty(result))
                     return "Col";
-
-                // 移除空格
-                pinyin = pinyin.Replace(" ", "");
                 
                 // 移除非字母数字字符
                 StringBuilder sb = new StringBuilder();
-                foreach (char c in pinyin)
+                foreach (char c in result)
                 {
                     if (char.IsLetterOrDigit(c) || c == '_')
                         sb.Append(c);
                 }
 
-                string result = sb.ToString();
+                result = sb.ToString();
                 if (string.IsNullOrEmpty(result))
                     return "Col";
 
-                // 驼峰命名法（首字母大写）
-                result = char.ToUpper(result[0]) + (result.Length > 1 ? result.Substring(1) : "");
+                // 格式化：首字母大写或全大写
+                if (mode == PinyinMode.FirstLetter)
+                {
+                    // 首字母模式：全部大写（如：PZRQ）
+                    result = result.ToUpper();
+                }
+                else
+                {
+                    // 全拼模式：驼峰命名（如：PingZhengRiQi）
+                    result = char.ToUpper(result[0]) + (result.Length > 1 ? result.Substring(1) : "");
+                }
                 
                 return result;
             }
@@ -107,25 +150,51 @@ namespace ExcelToSql
         /// <summary>
         /// 使用内置拼音字典转换（备用方案）
         /// </summary>
-        private static string ConvertByPinyin(string text)
+        private static string ConvertByPinyin(string text, PinyinMode mode)
         {
             if (string.IsNullOrEmpty(text))
                 return "Col";
 
             StringBuilder sb = new StringBuilder();
-            foreach (char c in text)
+            
+            if (mode == PinyinMode.FirstLetter)
             {
-                if (pinyinDict.ContainsKey(c))
+                // 首字母模式：只取每个字的首字母
+                foreach (char c in text)
                 {
-                    sb.Append(pinyinDict[c]);
+                    if (pinyinDict.ContainsKey(c))
+                    {
+                        string pinyin = pinyinDict[c];
+                        if (!string.IsNullOrEmpty(pinyin))
+                            sb.Append(char.ToUpper(pinyin[0]));
+                    }
+                    else if (IsEnglishLetter(c))
+                    {
+                        sb.Append(char.ToUpper(c));
+                    }
+                    else if (char.IsDigit(c))
+                    {
+                        sb.Append(c);
+                    }
                 }
-                else if (IsEnglishLetter(c) || char.IsDigit(c))
+            }
+            else
+            {
+                // 全拼模式：完整拼音
+                foreach (char c in text)
                 {
-                    sb.Append(c);
-                }
-                else if (c == '_')
-                {
-                    sb.Append(c);
+                    if (pinyinDict.ContainsKey(c))
+                    {
+                        sb.Append(pinyinDict[c]);
+                    }
+                    else if (IsEnglishLetter(c) || char.IsDigit(c))
+                    {
+                        sb.Append(c);
+                    }
+                    else if (c == '_')
+                    {
+                        sb.Append(c);
+                    }
                 }
             }
 
@@ -133,9 +202,17 @@ namespace ExcelToSql
             if (string.IsNullOrEmpty(result))
                 result = "Col";
             
-            // 首字母大写（驼峰命名）
-            if (result.Length > 0)
+            // 格式化
+            if (mode == PinyinMode.FirstLetter)
+            {
+                // 首字母模式：全部大写
+                result = result.ToUpper();
+            }
+            else if (result.Length > 0)
+            {
+                // 全拼模式：驼峰命名（首字母大写）
                 result = char.ToUpper(result[0]) + (result.Length > 1 ? result.Substring(1) : "");
+            }
 
             return result;
         }

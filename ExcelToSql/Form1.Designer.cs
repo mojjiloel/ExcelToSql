@@ -1,4 +1,4 @@
-﻿﻿namespace ExcelToSql
+﻿﻿﻿﻿namespace ExcelToSql
 {
     partial class Form1
     {
@@ -39,6 +39,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.dgvPreview = new System.Windows.Forms.DataGridView();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.cmbPinyinMode = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.txtTableName = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.cmbDatabase = new System.Windows.Forms.ComboBox();
@@ -167,6 +169,8 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.cmbPinyinMode);
+            this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.txtTableName);
             this.groupBox3.Controls.Add(this.label5);
             this.groupBox3.Controls.Add(this.cmbDatabase);
@@ -196,6 +200,24 @@
             this.label5.Size = new System.Drawing.Size(53, 12);
             this.label5.TabIndex = 4;
             this.label5.Text = "表名称：";
+            // 
+            // cmbPinyinMode
+            // 
+            this.cmbPinyinMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPinyinMode.FormattingEnabled = true;
+            this.cmbPinyinMode.Location = new System.Drawing.Point(820, 23);
+            this.cmbPinyinMode.Name = "cmbPinyinMode";
+            this.cmbPinyinMode.Size = new System.Drawing.Size(124, 20);
+            this.cmbPinyinMode.TabIndex = 7;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(737, 26);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(77, 12);
+            this.label6.TabIndex = 6;
+            this.label6.Text = "拼音模式：";
             // 
             // cmbDatabase
             // 
@@ -302,6 +324,8 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtTableName;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox cmbPinyinMode;
+        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button btnCopy;
         private System.Windows.Forms.Button btnSave;
     }

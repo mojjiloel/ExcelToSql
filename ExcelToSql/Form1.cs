@@ -32,6 +32,11 @@ namespace ExcelToSql
             cmbDatabase.Items.Add("Oracle");
             cmbDatabase.SelectedIndex = 0;
 
+            // 初始化拼音模式下拉框
+            cmbPinyinMode.Items.Add("全拼（如：PingZhengRiQi）");
+            cmbPinyinMode.Items.Add("首字母（如：PZRQ）");
+            cmbPinyinMode.SelectedIndex = 0; // 默认全拼
+
             // 设置默认列头行
             numHeaderRow.Value = 1;
         }
@@ -162,6 +167,11 @@ namespace ExcelToSql
 
             try
             {
+                // 设置拼音模式
+                PinyinHelper.CurrentMode = cmbPinyinMode.SelectedIndex == 0 
+                    ? PinyinMode.FullPinyin 
+                    : PinyinMode.FirstLetter;
+
                 // 读取数据
                 int headerRowIndex = (int)numHeaderRow.Value - 1;
                 currentData = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, true);
@@ -193,9 +203,10 @@ namespace ExcelToSql
                 string sql = generator.GenerateSql();
                 txtSqlOutput.Text = sql;
 
+                string modeText = cmbPinyinMode.SelectedIndex == 0 ? "全拼" : "首字母";
                 MessageBox.Show(
-                    string.Format("SQL生成成功！\r\n\r\n表名：{0}\r\n列数：{1}\r\n行数：{2}", 
-                        txtTableName.Text, currentData.Columns.Count, currentData.Rows.Count),
+                    string.Format("SQL生成成功！\r\n\r\n表名：{0}\r\n列数：{1}\r\n行数：{2}\r\n拼音模式：{3}", 
+                        txtTableName.Text, currentData.Columns.Count, currentData.Rows.Count, modeText),
                     "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
