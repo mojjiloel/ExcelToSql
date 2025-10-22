@@ -256,120 +256,120 @@ namespace ExcelToSql
         private static void InitializeCommonNameDict()
         {
             // 常用字段名映射（优先使用英文标准命名）
-            commonNameDict["编号"] = "ID";
-            commonNameDict["序号"] = "SeqNo";
-            commonNameDict["标识"] = "ID";
-            commonNameDict["主键"] = "ID";
+            //commonNameDict["编号"] = "ID";
+            //commonNameDict["序号"] = "SeqNo";
+            //commonNameDict["标识"] = "ID";
+            //commonNameDict["主键"] = "ID";
             
-            // 人员相关
-            commonNameDict["姓名"] = "Name";
-            commonNameDict["名称"] = "Name";
-            commonNameDict["用户名"] = "Username";
-            commonNameDict["昵称"] = "Nickname";
-            commonNameDict["年龄"] = "Age";
-            commonNameDict["性别"] = "Gender";
-            commonNameDict["生日"] = "Birthday";
-            commonNameDict["出生日期"] = "Birthday";
+            //// 人员相关
+            //commonNameDict["姓名"] = "Name";
+            //commonNameDict["名称"] = "Name";
+            //commonNameDict["用户名"] = "Username";
+            //commonNameDict["昵称"] = "Nickname";
+            //commonNameDict["年龄"] = "Age";
+            //commonNameDict["性别"] = "Gender";
+            //commonNameDict["生日"] = "Birthday";
+            //commonNameDict["出生日期"] = "Birthday";
             
-            // 联系方式
-            commonNameDict["电话"] = "Phone";
-            commonNameDict["手机"] = "Mobile";
-            commonNameDict["手机号"] = "Mobile";
-            commonNameDict["电话号码"] = "PhoneNumber";
-            commonNameDict["邮箱"] = "Email";
-            commonNameDict["邮件"] = "Email";
-            commonNameDict["地址"] = "Address";
-            commonNameDict["邮编"] = "ZipCode";
-            commonNameDict["邮政编码"] = "PostalCode";
+            //// 联系方式
+            //commonNameDict["电话"] = "Phone";
+            //commonNameDict["手机"] = "Mobile";
+            //commonNameDict["手机号"] = "Mobile";
+            //commonNameDict["电话号码"] = "PhoneNumber";
+            //commonNameDict["邮箱"] = "Email";
+            //commonNameDict["邮件"] = "Email";
+            //commonNameDict["地址"] = "Address";
+            //commonNameDict["邮编"] = "ZipCode";
+            //commonNameDict["邮政编码"] = "PostalCode";
             
-            // 时间相关
-            commonNameDict["日期"] = "Date";
-            commonNameDict["时间"] = "Time";
-            commonNameDict["创建时间"] = "CreateTime";
-            commonNameDict["创建日期"] = "CreateDate";
-            commonNameDict["修改时间"] = "UpdateTime";
-            commonNameDict["更新时间"] = "UpdateTime";
-            commonNameDict["删除时间"] = "DeleteTime";
-            commonNameDict["开始时间"] = "StartTime";
-            commonNameDict["结束时间"] = "EndTime";
-            commonNameDict["入职日期"] = "HireDate";
-            commonNameDict["离职日期"] = "LeaveDate";
+            //// 时间相关
+            //commonNameDict["日期"] = "Date";
+            //commonNameDict["时间"] = "Time";
+            //commonNameDict["创建时间"] = "CreateTime";
+            //commonNameDict["创建日期"] = "CreateDate";
+            //commonNameDict["修改时间"] = "UpdateTime";
+            //commonNameDict["更新时间"] = "UpdateTime";
+            //commonNameDict["删除时间"] = "DeleteTime";
+            //commonNameDict["开始时间"] = "StartTime";
+            //commonNameDict["结束时间"] = "EndTime";
+            //commonNameDict["入职日期"] = "HireDate";
+            //commonNameDict["离职日期"] = "LeaveDate";
             
-            // 组织架构
-            commonNameDict["公司"] = "Company";
-            commonNameDict["部门"] = "Department";
-            commonNameDict["职位"] = "Position";
-            commonNameDict["岗位"] = "Position";
-            commonNameDict["职务"] = "Title";
-            commonNameDict["职称"] = "Title";
-            commonNameDict["级别"] = "Level";
-            commonNameDict["等级"] = "Grade";
+            //// 组织架构
+            //commonNameDict["公司"] = "Company";
+            //commonNameDict["部门"] = "Department";
+            //commonNameDict["职位"] = "Position";
+            //commonNameDict["岗位"] = "Position";
+            //commonNameDict["职务"] = "Title";
+            //commonNameDict["职称"] = "Title";
+            //commonNameDict["级别"] = "Level";
+            //commonNameDict["等级"] = "Grade";
             
-            // 财务相关
-            commonNameDict["金额"] = "Amount";
-            commonNameDict["价格"] = "Price";
-            commonNameDict["单价"] = "UnitPrice";
-            commonNameDict["总价"] = "TotalPrice";
-            commonNameDict["费用"] = "Fee";
-            commonNameDict["工资"] = "Salary";
-            commonNameDict["薪资"] = "Salary";
-            commonNameDict["奖金"] = "Bonus";
-            commonNameDict["收入"] = "Income";
-            commonNameDict["支出"] = "Expense";
-            commonNameDict["余额"] = "Balance";
+            //// 财务相关
+            //commonNameDict["金额"] = "Amount";
+            //commonNameDict["价格"] = "Price";
+            //commonNameDict["单价"] = "UnitPrice";
+            //commonNameDict["总价"] = "TotalPrice";
+            //commonNameDict["费用"] = "Fee";
+            //commonNameDict["工资"] = "Salary";
+            //commonNameDict["薪资"] = "Salary";
+            //commonNameDict["奖金"] = "Bonus";
+            //commonNameDict["收入"] = "Income";
+            //commonNameDict["支出"] = "Expense";
+            //commonNameDict["余额"] = "Balance";
             
-            // 数量相关
-            commonNameDict["数量"] = "Quantity";
-            commonNameDict["数目"] = "Count";
-            commonNameDict["总数"] = "Total";
-            commonNameDict["库存"] = "Stock";
-            commonNameDict["重量"] = "Weight";
+            //// 数量相关
+            //commonNameDict["数量"] = "Quantity";
+            //commonNameDict["数目"] = "Count";
+            //commonNameDict["总数"] = "Total";
+            //commonNameDict["库存"] = "Stock";
+            //commonNameDict["重量"] = "Weight";
             
-            // 状态相关
-            commonNameDict["状态"] = "Status";
-            commonNameDict["类型"] = "Type";
-            commonNameDict["类别"] = "Category";
-            commonNameDict["分类"] = "Category";
-            commonNameDict["标签"] = "Tag";
-            commonNameDict["标记"] = "Flag";
+            //// 状态相关
+            //commonNameDict["状态"] = "Status";
+            //commonNameDict["类型"] = "Type";
+            //commonNameDict["类别"] = "Category";
+            //commonNameDict["分类"] = "Category";
+            //commonNameDict["标签"] = "Tag";
+            //commonNameDict["标记"] = "Flag";
             
-            // 描述相关
-            commonNameDict["备注"] = "Remark";
-            commonNameDict["说明"] = "Description";
-            commonNameDict["描述"] = "Description";
-            commonNameDict["注释"] = "Comment";
-            commonNameDict["内容"] = "Content";
-            commonNameDict["详情"] = "Detail";
+            //// 描述相关
+            //commonNameDict["备注"] = "Remark";
+            //commonNameDict["说明"] = "Description";
+            //commonNameDict["描述"] = "Description";
+            //commonNameDict["注释"] = "Comment";
+            //commonNameDict["内容"] = "Content";
+            //commonNameDict["详情"] = "Detail";
             
-            // 业务相关
-            commonNameDict["客户"] = "Customer";
-            commonNameDict["供应商"] = "Supplier";
-            commonNameDict["产品"] = "Product";
-            commonNameDict["商品"] = "Product";
-            commonNameDict["订单"] = "Order";
-            commonNameDict["订单号"] = "OrderNo";
-            commonNameDict["合同"] = "Contract";
-            commonNameDict["项目"] = "Project";
+            //// 业务相关
+            //commonNameDict["客户"] = "Customer";
+            //commonNameDict["供应商"] = "Supplier";
+            //commonNameDict["产品"] = "Product";
+            //commonNameDict["商品"] = "Product";
+            //commonNameDict["订单"] = "Order";
+            //commonNameDict["订单号"] = "OrderNo";
+            //commonNameDict["合同"] = "Contract";
+            //commonNameDict["项目"] = "Project";
             
-            // 账号相关
-            commonNameDict["账号"] = "Account";
-            commonNameDict["密码"] = "Password";
-            commonNameDict["令牌"] = "Token";
+            //// 账号相关
+            //commonNameDict["账号"] = "Account";
+            //commonNameDict["密码"] = "Password";
+            //commonNameDict["令牌"] = "Token";
             
-            // 其他常用
-            commonNameDict["图片"] = "Image";
-            commonNameDict["照片"] = "Photo";
-            commonNameDict["文件"] = "File";
-            commonNameDict["链接"] = "Link";
-            commonNameDict["网址"] = "URL";
-            commonNameDict["代码"] = "Code";
-            commonNameDict["编码"] = "Code";
-            commonNameDict["排序"] = "Sort";
-            commonNameDict["排序号"] = "SortOrder";
-            commonNameDict["是否"] = "IsFlag";
-            commonNameDict["启用"] = "Enabled";
-            commonNameDict["禁用"] = "Disabled";
-            commonNameDict["删除"] = "Deleted";
+            //// 其他常用
+            //commonNameDict["图片"] = "Image";
+            //commonNameDict["照片"] = "Photo";
+            //commonNameDict["文件"] = "File";
+            //commonNameDict["链接"] = "Link";
+            //commonNameDict["网址"] = "URL";
+            //commonNameDict["代码"] = "Code";
+            //commonNameDict["编码"] = "Code";
+            //commonNameDict["排序"] = "Sort";
+            //commonNameDict["排序号"] = "SortOrder";
+            //commonNameDict["是否"] = "IsFlag";
+            //commonNameDict["启用"] = "Enabled";
+            //commonNameDict["禁用"] = "Disabled";
+            //commonNameDict["删除"] = "Deleted";
         }
 
         private static bool IsEnglishLetter(char c)
