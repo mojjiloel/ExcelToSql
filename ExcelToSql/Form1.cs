@@ -64,7 +64,7 @@ namespace ExcelToSql
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Excel文件|*.xls;*.xlsx|CSV文件|*.csv";
+                ofd.Filter = "Excel或CSV文件|*.xls;*.xlsx;*.csv";
                 ofd.Title = "选择Excel或CSV文件";
 
                 if (ofd.ShowDialog() == DialogResult.OK)
@@ -310,7 +310,7 @@ namespace ExcelToSql
             {
                 excelReader.Close();
             }
-            base.OnFormClosing(e);
+            //base.OnFormClosing(e);
         }
 
     }
