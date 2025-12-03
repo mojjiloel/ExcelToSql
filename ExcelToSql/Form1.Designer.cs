@@ -92,6 +92,7 @@
             // 
             // label1
             // 
+            this.label1.BackColor = System.Drawing.SystemColors.Window;
             this.label1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label1.Location = new System.Drawing.Point(17, 12);
             this.label1.Name = "label1";
@@ -132,6 +133,7 @@
             // 
             // label3
             // 
+            this.label3.BackColor = System.Drawing.SystemColors.Window;
             this.label3.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label3.Location = new System.Drawing.Point(273, 14);
             this.label3.Name = "label3";
@@ -150,6 +152,7 @@
             // 
             // label2
             // 
+            this.label2.BackColor = System.Drawing.SystemColors.Window;
             this.label2.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label2.Location = new System.Drawing.Point(18, 14);
             this.label2.Name = "label2";
@@ -183,25 +186,26 @@
             this.panel3.Controls.Add(this.btnGenerate);
             this.panel3.Controls.Add(this.txtSqlOutput);
             this.panel3.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.panel3.Location = new System.Drawing.Point(15, 394);
+            this.panel3.Location = new System.Drawing.Point(9, 394);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(962, 280);
+            this.panel3.Size = new System.Drawing.Size(968, 280);
             this.panel3.TabIndex = 2;
             // 
             // cmbPinyinMode
             // 
-            this.cmbPinyinMode.Location = new System.Drawing.Point(822, 13);
+            this.cmbPinyinMode.Location = new System.Drawing.Point(828, 13);
             this.cmbPinyinMode.Name = "cmbPinyinMode";
             this.cmbPinyinMode.Size = new System.Drawing.Size(127, 45);
             this.cmbPinyinMode.TabIndex = 7;
             // 
             // label6
             // 
-            this.label6.Location = new System.Drawing.Point(712, 13);
+            this.label6.BackColor = System.Drawing.SystemColors.Window;
+            this.label6.Location = new System.Drawing.Point(720, 13);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(102, 45);
+            this.label6.Size = new System.Drawing.Size(100, 45);
             this.label6.TabIndex = 6;
-            this.label6.Text = "  拼音模式：";
+            this.label6.Text = "拼音模式：";
             // 
             // txtTableName
             // 
@@ -214,6 +218,7 @@
             // 
             // label5
             // 
+            this.label5.BackColor = System.Drawing.SystemColors.Window;
             this.label5.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label5.Location = new System.Drawing.Point(309, 13);
             this.label5.Name = "label5";
@@ -231,12 +236,13 @@
             // 
             // label4
             // 
+            this.label4.BackColor = System.Drawing.SystemColors.Window;
             this.label4.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label4.Location = new System.Drawing.Point(17, 13);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(98, 45);
             this.label4.TabIndex = 2;
-            this.label4.Text = "  数据库类型：";
+            this.label4.Text = "数据库类型：";
             // 
             // btnGenerate
             // 
@@ -258,7 +264,7 @@
             this.txtSqlOutput.Location = new System.Drawing.Point(17, 55);
             this.txtSqlOutput.Multiline = true;
             this.txtSqlOutput.Name = "txtSqlOutput";
-            this.txtSqlOutput.Size = new System.Drawing.Size(932, 210);
+            this.txtSqlOutput.Size = new System.Drawing.Size(938, 210);
             this.txtSqlOutput.TabIndex = 0;
             // 
             // btnCopy
