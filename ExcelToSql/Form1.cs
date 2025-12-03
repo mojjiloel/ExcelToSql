@@ -36,10 +36,25 @@ namespace ExcelToSql
             // 初始化拼音模式下拉框
             cmbPinyinMode.Items.Add(new AntdUI.SelectItem("全拼（如：PingZhengRiQi）"));
             cmbPinyinMode.Items.Add(new AntdUI.SelectItem("首字母（如：PZRQ）"));
-            cmbPinyinMode.SelectedIndex = 0; // 默认全拼
+            cmbPinyinMode.SelectedIndex = 1; // 默认全拼
 
             // 设置默认列头行
             numHeaderRow.Value = 1;
+
+            // 列头行 高亮
+            dgvPreview.SetRowStyle += dgvPreview_SetRowStyle; ; 
+        }
+
+        private Table.CellStyleInfo dgvPreview_SetRowStyle(object sender, TableSetRowStyleEventArgs e)
+        {
+            if (e.RowIndex == numHeaderRow.Value)
+            {
+                return new AntdUI.Table.CellStyleInfo
+                {
+                    BackColor = Color.LightYellow,                    
+                };
+            }
+            return null;
         }
 
         /// <summary>
@@ -138,8 +153,6 @@ namespace ExcelToSql
                 DataTable dt = excelReader.PreviewSheet(cmbSheets.SelectedIndex, 50);
                 dgvPreview.DataSource = dt;
 
-                // 注意：AntdUI的Table控件不支持直接设置行样式，
-                // 如需高亮列头行，需要通过其他方式实现
             }
             catch (Exception ex)
             {
@@ -281,7 +294,7 @@ namespace ExcelToSql
                           title,
                           message)
             {
-                Icon = TType.Error,
+                Icon = icon,
                 //内边距
                 Padding = new Size(24, 20),
                 Font = new Font("微软雅黑", 12),
