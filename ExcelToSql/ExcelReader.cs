@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Text;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -15,11 +16,87 @@ namespace ExcelToSql
     {
         private IWorkbook workbook;
         private string filePath;
+        private bool isCsvFile;
+        private List<string[]> csvData;
 
         public ExcelReader(string filePath)
         {
             this.filePath = filePath;
-            LoadWorkbook();
+            string extension = Path.GetExtension(filePath).ToLower();
+            isCsvFile = extension == ".csv";
+            
+            if (isCsvFile)
+            {
+                LoadCsvData();
+            }
+            else
+            {
+                LoadWorkbook();
+            }
+        }
+
+        /// <summary>
+        /// 加载CSV数据
+        /// </summary>
+        private void LoadCsvData()
+        {
+            csvData = new List<string[]>();
+            using (var reader = new StreamReader(filePath, Encoding.UTF8))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    string[] values = ParseCsvLine(line);
+                    csvData.Add(values);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 解析CSV行数据
+        /// </summary>
+        private string[] ParseCsvLine(string line)
+        {
+            List<string> values = new List<string>();
+            StringBuilder currentValue = new StringBuilder();
+            bool inQuotes = false;
+
+            for (int i = 0; i < line.Length; i++)
+            {
+                char c = line[i];
+
+                if (c == '"' && !inQuotes)
+                {
+                    inQuotes = true;
+                }
+                else if (c == '"' && inQuotes)
+                {
+                    // 检查下一个字符是否也是引号（转义引号）
+                    if (i + 1 < line.Length && line[i + 1] == '"')
+                    {
+                        currentValue.Append('"');
+                        i++; // 跳过下一个引号
+                    }
+                    else
+                    {
+                        inQuotes = false;
+                    }
+                }
+                else if (c == ',' && !inQuotes)
+                {
+                    values.Add(currentValue.ToString());
+                    currentValue.Clear();
+                }
+                else
+                {
+                    currentValue.Append(c);
+                }
+            }
+
+            // 添加最后一个值
+            values.Add(currentValue.ToString());
+
+            return values.ToArray();
         }
 
         /// <summary>
@@ -40,7 +117,7 @@ namespace ExcelToSql
                 }
                 else
                 {
-                    throw new Exception("不支持的文件格式，仅支持.xls和.xlsx文件");
+                    throw new Exception("不支持的文件格式，仅支持.xls、.xlsx和.csv文件");
                 }
             }
         }
@@ -50,6 +127,12 @@ namespace ExcelToSql
         /// </summary>
         public List<string> GetSheetNames()
         {
+            if (isCsvFile)
+            {
+                // CSV文件只有一个"Sheet"
+                return new List<string> { "Sheet1" };
+            }
+            
             List<string> sheetNames = new List<string>();
             for (int i = 0; i < workbook.NumberOfSheets; i++)
             {
@@ -66,6 +149,11 @@ namespace ExcelToSql
         /// <param name="convertColumnNames">是否转换列名为数据库兼容格式</param>
         public DataTable ReadSheet(int sheetIndex, int headerRowIndex, bool convertColumnNames = true)
         {
+            if (isCsvFile)
+            {
+                return ReadCsvToDataTable(headerRowIndex, convertColumnNames);
+            }
+            
             ISheet sheet = workbook.GetSheetAt(sheetIndex);
             return ReadSheetToDataTable(sheet, headerRowIndex, convertColumnNames);
         }
@@ -75,6 +163,11 @@ namespace ExcelToSql
         /// </summary>
         public DataTable ReadSheet(string sheetName, int headerRowIndex, bool convertColumnNames = true)
         {
+            if (isCsvFile)
+            {
+                return ReadCsvToDataTable(headerRowIndex, convertColumnNames);
+            }
+            
             ISheet sheet = workbook.GetSheet(sheetName);
             if (sheet == null)
                 throw new Exception("未找到指定的Sheet: " + sheetName);
@@ -87,6 +180,11 @@ namespace ExcelToSql
         /// </summary>
         public DataTable PreviewSheet(int sheetIndex, int maxRows = 100)
         {
+            if (isCsvFile)
+            {
+                return PreviewCsvData(maxRows);
+            }
+            
             ISheet sheet = workbook.GetSheetAt(sheetIndex);
             DataTable dt = new DataTable();
 
@@ -123,6 +221,133 @@ namespace ExcelToSql
                 }
                 dt.Rows.Add(dr);
                 rowCount++;
+            }
+
+            return dt;
+        }
+
+        /// <summary>
+        /// 预览CSV数据
+        /// </summary>
+        private DataTable PreviewCsvData(int maxRows = 100)
+        {
+            DataTable dt = new DataTable();
+
+            if (csvData.Count == 0)
+                return dt;
+
+            // 获取最大列数
+            int maxCols = 0;
+            for (int i = 0; i < Math.Min(maxRows, csvData.Count); i++)
+            {
+                if (csvData[i].Length > maxCols)
+                    maxCols = csvData[i].Length;
+            }
+
+            // 创建列
+            for (int i = 0; i < maxCols; i++)
+            {
+                dt.Columns.Add("Column" + (i + 1), typeof(string));
+            }
+
+            // 读取数据
+            int rowCount = 0;
+            for (int i = 0; i < csvData.Count && rowCount < maxRows; i++)
+            {
+                DataRow dr = dt.NewRow();
+                string[] rowData = csvData[i];
+                
+                for (int j = 0; j < maxCols; j++)
+                {
+                    if (j < rowData.Length)
+                    {
+                        dr[j] = rowData[j];
+                    }
+                    else
+                    {
+                        dr[j] = string.Empty;
+                    }
+                }
+                dt.Rows.Add(dr);
+                rowCount++;
+            }
+
+            return dt;
+        }
+
+        /// <summary>
+        /// 将CSV数据转换为DataTable
+        /// </summary>
+        private DataTable ReadCsvToDataTable(int headerRowIndex, bool convertColumnNames)
+        {
+            DataTable dt = new DataTable();
+
+            if (csvData.Count == 0)
+                return dt;
+
+            // 检查列头行是否存在
+            if (headerRowIndex >= csvData.Count)
+                throw new Exception("指定的列头行不存在");
+
+            // 读取列头
+            string[] headerRow = csvData[headerRowIndex];
+            Dictionary<int, string> columnNames = new Dictionary<int, string>();
+            
+            for (int i = 0; i < headerRow.Length; i++)
+            {
+                string columnName = headerRow[i];
+                
+                if (string.IsNullOrWhiteSpace(columnName))
+                    columnName = "Column" + (i + 1);
+
+                if (convertColumnNames)
+                    columnName = PinyinHelper.ConvertToDbColumnName(columnName);
+                
+                // 确保列名唯一
+                string uniqueName = columnName;
+                int counter = 1;
+                while (columnNames.ContainsValue(uniqueName))
+                {
+                    uniqueName = columnName + counter;
+                    counter++;
+                }
+                
+                columnNames[i] = uniqueName;
+                dt.Columns.Add(uniqueName, typeof(string));
+            }
+
+            // 读取数据行（从列头的下一行开始）
+            for (int i = headerRowIndex + 1; i < csvData.Count; i++)
+            {
+                string[] rowData = csvData[i];
+                
+                // 检查是否为空行
+                bool isEmptyRow = true;
+                for (int j = 0; j < headerRow.Length; j++)
+                {
+                    if (j < rowData.Length && !string.IsNullOrWhiteSpace(rowData[j]))
+                    {
+                        isEmptyRow = false;
+                        break;
+                    }
+                }
+
+                if (isEmptyRow)
+                    continue;
+
+                DataRow dr = dt.NewRow();
+                for (int j = 0; j < headerRow.Length; j++)
+                {
+                    if (j < rowData.Length)
+                    {
+                        dr[columnNames[j]] = rowData[j];
+                    }
+                    else
+                    {
+                        dr[columnNames[j]] = string.Empty;
+                    }
+                }
+                dt.Rows.Add(dr);
             }
 
             return dt;

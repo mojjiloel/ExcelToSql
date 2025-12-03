@@ -28,306 +28,321 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.btnBrowse = new System.Windows.Forms.Button();
-            this.txtFilePath = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.numHeaderRow = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
-            this.cmbSheets = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.dgvPreview = new System.Windows.Forms.DataGridView();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.cmbPinyinMode = new System.Windows.Forms.ComboBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.txtTableName = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.cmbDatabase = new System.Windows.Forms.ComboBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.btnGenerate = new System.Windows.Forms.Button();
-            this.txtSqlOutput = new System.Windows.Forms.TextBox();
-            this.btnCopy = new System.Windows.Forms.Button();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numHeaderRow)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPreview)).BeginInit();
-            this.groupBox3.SuspendLayout();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            this.panel1 = new AntdUI.Panel();
+            this.btnBrowse = new AntdUI.Button();
+            this.txtFilePath = new AntdUI.Input();
+            this.label1 = new AntdUI.Label();
+            this.panel2 = new AntdUI.Panel();
+            this.numHeaderRow = new AntdUI.InputNumber();
+            this.label3 = new AntdUI.Label();
+            this.cmbSheets = new AntdUI.Select();
+            this.label2 = new AntdUI.Label();
+            this.dgvPreview = new AntdUI.Table();
+            this.panel3 = new AntdUI.Panel();
+            this.cmbPinyinMode = new AntdUI.Select();
+            this.label6 = new AntdUI.Label();
+            this.txtTableName = new AntdUI.Input();
+            this.label5 = new AntdUI.Label();
+            this.cmbDatabase = new AntdUI.Select();
+            this.label4 = new AntdUI.Label();
+            this.btnGenerate = new AntdUI.Button();
+            this.txtSqlOutput = new AntdUI.Input();
+            this.btnCopy = new AntdUI.Button();
+            this.btnSave = new AntdUI.Button();
+            this.pageHeader1 = new AntdUI.PageHeader();
+            this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
-            // groupBox1
+            // panel1
             // 
-            this.groupBox1.Controls.Add(this.btnBrowse);
-            this.groupBox1.Controls.Add(this.txtFilePath);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(960, 60);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "文件选择";
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.btnBrowse);
+            this.panel1.Controls.Add(this.txtFilePath);
+            this.panel1.Controls.Add(this.label1);
+            this.panel1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.panel1.Location = new System.Drawing.Point(9, 42);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(971, 60);
+            this.panel1.TabIndex = 0;
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(859, 22);
+            this.btnBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBrowse.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnBrowse.Location = new System.Drawing.Point(843, 12);
             this.btnBrowse.Name = "btnBrowse";
-            this.btnBrowse.Size = new System.Drawing.Size(85, 23);
+            this.btnBrowse.Size = new System.Drawing.Size(125, 45);
             this.btnBrowse.TabIndex = 2;
             this.btnBrowse.Text = "浏览...";
-            this.btnBrowse.UseVisualStyleBackColor = true;
+            this.btnBrowse.Type = AntdUI.TTypeMini.Primary;
             this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
             // 
             // txtFilePath
             // 
-            this.txtFilePath.Location = new System.Drawing.Point(90, 24);
+            this.txtFilePath.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.txtFilePath.Location = new System.Drawing.Point(90, 12);
             this.txtFilePath.Name = "txtFilePath";
             this.txtFilePath.ReadOnly = true;
-            this.txtFilePath.Size = new System.Drawing.Size(750, 21);
+            this.txtFilePath.Size = new System.Drawing.Size(727, 45);
             this.txtFilePath.TabIndex = 1;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(15, 27);
+            this.label1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label1.Location = new System.Drawing.Point(17, 12);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(77, 12);
+            this.label1.Size = new System.Drawing.Size(77, 45);
             this.label1.TabIndex = 0;
             this.label1.Text = "Excel文件：";
             // 
-            // groupBox2
+            // panel2
             // 
-            this.groupBox2.Controls.Add(this.numHeaderRow);
-            this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Controls.Add(this.cmbSheets);
-            this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Controls.Add(this.dgvPreview);
-            this.groupBox2.Location = new System.Drawing.Point(12, 78);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(960, 280);
-            this.groupBox2.TabIndex = 1;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "数据预览";
+            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel2.Controls.Add(this.numHeaderRow);
+            this.panel2.Controls.Add(this.label3);
+            this.panel2.Controls.Add(this.cmbSheets);
+            this.panel2.Controls.Add(this.label2);
+            this.panel2.Controls.Add(this.dgvPreview);
+            this.panel2.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.panel2.Location = new System.Drawing.Point(9, 108);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(971, 280);
+            this.panel2.TabIndex = 1;
             // 
             // numHeaderRow
             // 
-            this.numHeaderRow.Location = new System.Drawing.Point(368, 23);
-            this.numHeaderRow.Maximum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
+            this.numHeaderRow.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.numHeaderRow.Location = new System.Drawing.Point(368, 14);
             this.numHeaderRow.Name = "numHeaderRow";
-            this.numHeaderRow.Size = new System.Drawing.Size(80, 21);
+            this.numHeaderRow.Size = new System.Drawing.Size(80, 45);
             this.numHeaderRow.TabIndex = 4;
+            this.numHeaderRow.Text = "1";
             this.numHeaderRow.Value = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.numHeaderRow.ValueChanged += new System.EventHandler(this.numHeaderRow_ValueChanged);
+            this.numHeaderRow.ValueChanged += new AntdUI.DecimalEventHandler(this.numHeaderRow_ValueChanged);
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(273, 26);
+            this.label3.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label3.Location = new System.Drawing.Point(273, 14);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(89, 12);
+            this.label3.Size = new System.Drawing.Size(89, 45);
             this.label3.TabIndex = 3;
             this.label3.Text = "列头行号(1起)";
             // 
             // cmbSheets
             // 
-            this.cmbSheets.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbSheets.FormattingEnabled = true;
-            this.cmbSheets.Location = new System.Drawing.Point(90, 23);
+            this.cmbSheets.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.cmbSheets.Location = new System.Drawing.Point(107, 14);
             this.cmbSheets.Name = "cmbSheets";
-            this.cmbSheets.Size = new System.Drawing.Size(150, 20);
+            this.cmbSheets.Size = new System.Drawing.Size(150, 45);
             this.cmbSheets.TabIndex = 2;
-            this.cmbSheets.SelectedIndexChanged += new System.EventHandler(this.cmbSheets_SelectedIndexChanged);
+            this.cmbSheets.SelectedIndexChanged += new AntdUI.IntEventHandler(this.cmbSheets_SelectedIndexChanged);
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 26);
+            this.label2.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label2.Location = new System.Drawing.Point(18, 14);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(71, 12);
+            this.label2.Size = new System.Drawing.Size(71, 45);
             this.label2.TabIndex = 1;
             this.label2.Text = "选择Sheet：";
             // 
             // dgvPreview
             // 
-            this.dgvPreview.AllowUserToAddRows = false;
-            this.dgvPreview.AllowUserToDeleteRows = false;
-            this.dgvPreview.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvPreview.Location = new System.Drawing.Point(17, 55);
+            this.dgvPreview.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvPreview.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.dgvPreview.Gap = 12;
+            this.dgvPreview.Location = new System.Drawing.Point(17, 74);
             this.dgvPreview.Name = "dgvPreview";
-            this.dgvPreview.ReadOnly = true;
-            this.dgvPreview.RowTemplate.Height = 23;
-            this.dgvPreview.Size = new System.Drawing.Size(927, 210);
+            this.dgvPreview.Size = new System.Drawing.Size(938, 191);
             this.dgvPreview.TabIndex = 0;
             // 
-            // groupBox3
+            // panel3
             // 
-            this.groupBox3.Controls.Add(this.cmbPinyinMode);
-            this.groupBox3.Controls.Add(this.label6);
-            this.groupBox3.Controls.Add(this.txtTableName);
-            this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Controls.Add(this.cmbDatabase);
-            this.groupBox3.Controls.Add(this.label4);
-            this.groupBox3.Controls.Add(this.btnGenerate);
-            this.groupBox3.Controls.Add(this.txtSqlOutput);
-            this.groupBox3.Location = new System.Drawing.Point(12, 364);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(960, 280);
-            this.groupBox3.TabIndex = 2;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "SQL生成";
+            this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel3.Controls.Add(this.cmbPinyinMode);
+            this.panel3.Controls.Add(this.label6);
+            this.panel3.Controls.Add(this.txtTableName);
+            this.panel3.Controls.Add(this.label5);
+            this.panel3.Controls.Add(this.cmbDatabase);
+            this.panel3.Controls.Add(this.label4);
+            this.panel3.Controls.Add(this.btnGenerate);
+            this.panel3.Controls.Add(this.txtSqlOutput);
+            this.panel3.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.panel3.Location = new System.Drawing.Point(15, 394);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(962, 280);
+            this.panel3.TabIndex = 2;
+            // 
+            // cmbPinyinMode
+            // 
+            this.cmbPinyinMode.Location = new System.Drawing.Point(822, 13);
+            this.cmbPinyinMode.Name = "cmbPinyinMode";
+            this.cmbPinyinMode.Size = new System.Drawing.Size(127, 45);
+            this.cmbPinyinMode.TabIndex = 7;
+            // 
+            // label6
+            // 
+            this.label6.Location = new System.Drawing.Point(712, 13);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(102, 45);
+            this.label6.TabIndex = 6;
+            this.label6.Text = "  拼音模式：";
             // 
             // txtTableName
             // 
-            this.txtTableName.Location = new System.Drawing.Point(368, 23);
+            this.txtTableName.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.txtTableName.Location = new System.Drawing.Point(368, 13);
             this.txtTableName.Name = "txtTableName";
-            this.txtTableName.Size = new System.Drawing.Size(150, 21);
+            this.txtTableName.Size = new System.Drawing.Size(150, 45);
             this.txtTableName.TabIndex = 5;
             this.txtTableName.Text = "TempTable";
             // 
             // label5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(309, 26);
+            this.label5.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label5.Location = new System.Drawing.Point(309, 13);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(53, 12);
+            this.label5.Size = new System.Drawing.Size(53, 45);
             this.label5.TabIndex = 4;
             this.label5.Text = "表名称：";
             // 
-            // cmbPinyinMode
-            // 
-            this.cmbPinyinMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPinyinMode.FormattingEnabled = true;
-            this.cmbPinyinMode.Location = new System.Drawing.Point(820, 23);
-            this.cmbPinyinMode.Name = "cmbPinyinMode";
-            this.cmbPinyinMode.Size = new System.Drawing.Size(124, 20);
-            this.cmbPinyinMode.TabIndex = 7;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(737, 26);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(77, 12);
-            this.label6.TabIndex = 6;
-            this.label6.Text = "拼音模式：";
-            // 
             // cmbDatabase
             // 
-            this.cmbDatabase.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbDatabase.FormattingEnabled = true;
-            this.cmbDatabase.Location = new System.Drawing.Point(90, 23);
+            this.cmbDatabase.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.cmbDatabase.Location = new System.Drawing.Point(140, 13);
             this.cmbDatabase.Name = "cmbDatabase";
-            this.cmbDatabase.Size = new System.Drawing.Size(150, 20);
+            this.cmbDatabase.Size = new System.Drawing.Size(150, 45);
             this.cmbDatabase.TabIndex = 3;
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(15, 26);
+            this.label4.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label4.Location = new System.Drawing.Point(17, 13);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(77, 12);
+            this.label4.Size = new System.Drawing.Size(98, 45);
             this.label4.TabIndex = 2;
-            this.label4.Text = "数据库类型：";
+            this.label4.Text = "  数据库类型：";
             // 
             // btnGenerate
             // 
-            this.btnGenerate.Location = new System.Drawing.Point(550, 21);
+            this.btnGenerate.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnGenerate.Location = new System.Drawing.Point(536, 13);
             this.btnGenerate.Name = "btnGenerate";
-            this.btnGenerate.Size = new System.Drawing.Size(100, 23);
+            this.btnGenerate.Size = new System.Drawing.Size(125, 45);
             this.btnGenerate.TabIndex = 1;
             this.btnGenerate.Text = "生成SQL";
-            this.btnGenerate.UseVisualStyleBackColor = true;
+            this.btnGenerate.Type = AntdUI.TTypeMini.Primary;
             this.btnGenerate.Click += new System.EventHandler(this.btnGenerate_Click);
             // 
             // txtSqlOutput
             // 
-            this.txtSqlOutput.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtSqlOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtSqlOutput.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txtSqlOutput.Location = new System.Drawing.Point(17, 55);
             this.txtSqlOutput.Multiline = true;
             this.txtSqlOutput.Name = "txtSqlOutput";
-            this.txtSqlOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtSqlOutput.Size = new System.Drawing.Size(927, 210);
+            this.txtSqlOutput.Size = new System.Drawing.Size(932, 210);
             this.txtSqlOutput.TabIndex = 0;
-            this.txtSqlOutput.WordWrap = false;
             // 
             // btnCopy
             // 
-            this.btnCopy.Location = new System.Drawing.Point(792, 650);
+            this.btnCopy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCopy.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnCopy.Location = new System.Drawing.Point(721, 680);
             this.btnCopy.Name = "btnCopy";
-            this.btnCopy.Size = new System.Drawing.Size(85, 23);
+            this.btnCopy.Size = new System.Drawing.Size(125, 45);
             this.btnCopy.TabIndex = 3;
             this.btnCopy.Text = "复制SQL";
-            this.btnCopy.UseVisualStyleBackColor = true;
+            this.btnCopy.Type = AntdUI.TTypeMini.Primary;
             this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(887, 650);
+            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSave.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnSave.Location = new System.Drawing.Point(852, 680);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(85, 23);
+            this.btnSave.Size = new System.Drawing.Size(125, 45);
             this.btnSave.TabIndex = 4;
             this.btnSave.Text = "保存SQL";
-            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Type = AntdUI.TTypeMini.Primary;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // pageHeader1
+            // 
+            this.pageHeader1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pageHeader1.Font = new System.Drawing.Font("微软雅黑", 12F);
+            this.pageHeader1.IconSvg = resources.GetString("pageHeader1.IconSvg");
+            this.pageHeader1.Location = new System.Drawing.Point(0, 0);
+            this.pageHeader1.Name = "pageHeader1";
+            this.pageHeader1.ShowButton = true;
+            this.pageHeader1.ShowIcon = true;
+            this.pageHeader1.Size = new System.Drawing.Size(992, 36);
+            this.pageHeader1.TabIndex = 5;
+            this.pageHeader1.Text = "Excel转SQL工具";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(984, 681);
+            this.ClientSize = new System.Drawing.Size(992, 737);
+            this.Controls.Add(this.pageHeader1);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnCopy);
-            this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
+            this.Controls.Add(this.panel3);
+            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.panel1);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Excel转SQL工具";
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numHeaderRow)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPreview)).EndInit();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button btnBrowse;
-        private System.Windows.Forms.TextBox txtFilePath;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.DataGridView dgvPreview;
-        private System.Windows.Forms.ComboBox cmbSheets;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.NumericUpDown numHeaderRow;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.TextBox txtSqlOutput;
-        private System.Windows.Forms.Button btnGenerate;
-        private System.Windows.Forms.ComboBox cmbDatabase;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox txtTableName;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ComboBox cmbPinyinMode;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button btnCopy;
-        private System.Windows.Forms.Button btnSave;
+        private AntdUI.Panel panel1;
+        private AntdUI.Button btnBrowse;
+        private AntdUI.Input txtFilePath;
+        private AntdUI.Label label1;
+        private AntdUI.Panel panel2;
+        private AntdUI.Table dgvPreview;
+        private AntdUI.Select cmbSheets;
+        private AntdUI.Label label2;
+        private AntdUI.InputNumber numHeaderRow;
+        private AntdUI.Label label3;
+        private AntdUI.Panel panel3;
+        private AntdUI.Input txtSqlOutput;
+        private AntdUI.Button btnGenerate;
+        private AntdUI.Select cmbDatabase;
+        private AntdUI.Label label4;
+        private AntdUI.Input txtTableName;
+        private AntdUI.Label label5;
+        private AntdUI.Select cmbPinyinMode;
+        private AntdUI.Label label6;
+        private AntdUI.Button btnCopy;
+        private AntdUI.Button btnSave;
+        private AntdUI.PageHeader pageHeader1;
     }
 }
 

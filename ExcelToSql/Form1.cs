@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,10 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using AntdUI;
 
 namespace ExcelToSql
 {
-    public partial class Form1 : Form
+    public partial class Form1 : Window
     {
         private ExcelReader excelReader;
         private DataTable currentData;
@@ -27,14 +28,14 @@ namespace ExcelToSql
         private void InitializeForm()
         {
             // 初始化数据库类型下拉框
-            cmbDatabase.Items.Add("SQL Server");
-            cmbDatabase.Items.Add("MySQL");
-            cmbDatabase.Items.Add("Oracle");
+            cmbDatabase.Items.Add(new AntdUI.SelectItem("SQL Server"));
+            cmbDatabase.Items.Add(new AntdUI.SelectItem("MySQL"));
+            cmbDatabase.Items.Add(new AntdUI.SelectItem("Oracle"));
             cmbDatabase.SelectedIndex = 0;
 
             // 初始化拼音模式下拉框
-            cmbPinyinMode.Items.Add("全拼（如：PingZhengRiQi）");
-            cmbPinyinMode.Items.Add("首字母（如：PZRQ）");
+            cmbPinyinMode.Items.Add(new AntdUI.SelectItem("全拼（如：PingZhengRiQi）"));
+            cmbPinyinMode.Items.Add(new AntdUI.SelectItem("首字母（如：PZRQ）"));
             cmbPinyinMode.SelectedIndex = 0; // 默认全拼
 
             // 设置默认列头行
@@ -48,8 +49,8 @@ namespace ExcelToSql
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Excel文件|*.xls;*.xlsx";
-                ofd.Title = "选择Excel文件";
+                ofd.Filter = "Excel文件|*.xls;*.xlsx|CSV文件|*.csv";
+                ofd.Title = "选择Excel或CSV文件";
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
@@ -60,8 +61,15 @@ namespace ExcelToSql
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("加载文件失败：" + ex.Message, "错误", 
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        AntdUI.Modal.open(new AntdUI.Modal.Config(this,
+                          "错误",
+                          $"加载文件失败: {ex.Message}")
+                        {
+                            Icon = TType.Error,
+                            //内边距
+                            Padding = new Size(24, 20),
+                            Font = new Font("微软雅黑", 12),
+                        });
                     }
                 }
             }
@@ -80,13 +88,13 @@ namespace ExcelToSql
 
             // 加载新文件
             excelReader = new ExcelReader(filePath);
-            
+
             // 获取Sheet列表
             List<string> sheets = excelReader.GetSheetNames();
             cmbSheets.Items.Clear();
             foreach (string sheet in sheets)
             {
-                cmbSheets.Items.Add(sheet);
+                cmbSheets.Items.Add(new AntdUI.SelectItem(sheet));
             }
 
             if (cmbSheets.Items.Count > 0)
@@ -95,11 +103,9 @@ namespace ExcelToSql
             }
         }
 
-        /// <summary>
-        /// Sheet选择改变
-        /// </summary>
-        private void cmbSheets_SelectedIndexChanged(object sender, EventArgs e)
+        private void cmbSheets_SelectedIndexChanged(object sender, IntEventArgs e)
         {
+            // AntdUI的Select控件使用SelectedIndex属性
             if (cmbSheets.SelectedIndex >= 0)
             {
                 LoadPreview();
@@ -109,7 +115,7 @@ namespace ExcelToSql
         /// <summary>
         /// 列头行改变
         /// </summary>
-        private void numHeaderRow_ValueChanged(object sender, EventArgs e)
+        private void numHeaderRow_ValueChanged(object sender, DecimalEventArgs e)
         {
             if (cmbSheets.SelectedIndex >= 0)
             {
@@ -127,22 +133,24 @@ namespace ExcelToSql
 
             try
             {
+                // 对于AntdUI的Select控件，我们需要获取实际的Sheet名称
+                // 假设我们可以通过某种方式获取到选中的值
                 DataTable dt = excelReader.PreviewSheet(cmbSheets.SelectedIndex, 50);
                 dgvPreview.DataSource = dt;
 
-                // 高亮列头行
-                if (dt.Rows.Count > 0 && numHeaderRow.Value > 0 && numHeaderRow.Value <= dt.Rows.Count)
-                {
-                    int headerRowIndex = (int)numHeaderRow.Value - 1;
-                    dgvPreview.Rows[headerRowIndex].DefaultCellStyle.BackColor = Color.LightYellow;
-                    dgvPreview.Rows[headerRowIndex].DefaultCellStyle.Font = 
-                        new Font(dgvPreview.Font, FontStyle.Bold);
-                }
+                // 注意：AntdUI的Table控件不支持直接设置行样式，
+                // 如需高亮列头行，需要通过其他方式实现
             }
             catch (Exception ex)
             {
-                MessageBox.Show("预览失败：" + ex.Message, "错误", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                AntdUI.Modal.open(new AntdUI.Modal.Config(this,
+                 "错误",
+                 $"预览失败: {ex.Message}")
+                {
+                    Icon = TType.Error,
+                    //内边距
+                    Padding = new Size(24, 20),
+                });
             }
         }
 
@@ -153,33 +161,31 @@ namespace ExcelToSql
         {
             if (excelReader == null || cmbSheets.SelectedIndex < 0)
             {
-                MessageBox.Show("请先选择Excel文件和Sheet", "提示", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Alert("请先选择Excel文件和Sheet", "提示", TType.Info);
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtTableName.Text))
             {
-                MessageBox.Show("请输入表名称", "提示", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Alert("请输入表名称", "提示", TType.Info);
                 return;
             }
 
             try
             {
                 // 设置拼音模式
-                PinyinHelper.CurrentMode = cmbPinyinMode.SelectedIndex == 0 
-                    ? PinyinMode.FullPinyin 
+                PinyinHelper.CurrentMode = cmbPinyinMode.SelectedIndex == 0
+                    ? PinyinMode.FullPinyin
                     : PinyinMode.FirstLetter;
 
                 // 读取数据
                 int headerRowIndex = (int)numHeaderRow.Value - 1;
+                // 对于AntdUI的Select控件，我们需要获取实际的Sheet索引
                 currentData = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, true);
 
                 if (currentData.Rows.Count == 0)
                 {
-                    MessageBox.Show("没有数据可以生成", "提示", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    Alert("没有数据可以生成", "提示",TType.Info);
                     return;
                 }
 
@@ -204,15 +210,13 @@ namespace ExcelToSql
                 txtSqlOutput.Text = sql;
 
                 string modeText = cmbPinyinMode.SelectedIndex == 0 ? "全拼" : "首字母";
-                MessageBox.Show(
-                    string.Format("SQL生成成功！\r\n\r\n表名：{0}\r\n列数：{1}\r\n行数：{2}\r\n拼音模式：{3}", 
+                Alert(string.Format("SQL生成成功！\r\n\r\n表名：{0}\r\n列数：{1}\r\n行数：{2}\r\n拼音模式：{3}",
                         txtTableName.Text, currentData.Columns.Count, currentData.Rows.Count, modeText),
-                    "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    "成功", TType.Success);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("生成SQL失败：" + ex.Message, "错误", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Alert("生成SQL失败：" + ex.Message, "错误");
             }
         }
 
@@ -223,21 +227,18 @@ namespace ExcelToSql
         {
             if (string.IsNullOrWhiteSpace(txtSqlOutput.Text))
             {
-                MessageBox.Show("没有可复制的SQL", "提示", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Alert("没有可复制的SQL", "提示",TType.Success);
                 return;
             }
 
             try
             {
                 Clipboard.SetText(txtSqlOutput.Text);
-                MessageBox.Show("已复制到剪贴板", "成功", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Alert("已复制到剪贴板", "成功",TType.Success);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("复制失败：" + ex.Message, "错误", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Alert("复制失败：" + ex.Message, "错误");
             }
         }
 
@@ -248,8 +249,7 @@ namespace ExcelToSql
         {
             if (string.IsNullOrWhiteSpace(txtSqlOutput.Text))
             {
-                MessageBox.Show("没有可保存的SQL", "提示", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Alert("没有可保存的SQL", "提示",TType.Info);
                 return;
             }
 
@@ -264,16 +264,28 @@ namespace ExcelToSql
                     try
                     {
                         File.WriteAllText(sfd.FileName, txtSqlOutput.Text, Encoding.UTF8);
-                        MessageBox.Show("保存成功", "成功", 
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        Alert("保存成功", "成功",
+                            TType.Success);
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("保存失败：" + ex.Message, "错误", 
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Alert("保存失败：" + ex.Message, "错误");
                     }
                 }
             }
+        }
+
+        private void Alert(string message, string title = "提示", AntdUI.TType icon = AntdUI.TType.Error)
+        {
+            AntdUI.Modal.open(new AntdUI.Modal.Config(this,
+                          title,
+                          message)
+            {
+                Icon = TType.Error,
+                //内边距
+                Padding = new Size(24, 20),
+                Font = new Font("微软雅黑", 12),
+            });
         }
 
         /// <summary>
@@ -287,5 +299,6 @@ namespace ExcelToSql
             }
             base.OnFormClosing(e);
         }
+
     }
 }
