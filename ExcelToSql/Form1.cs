@@ -1,13 +1,15 @@
-﻿using System;
+﻿using AntdUI;
+using NPOI.OpenXmlFormats.Spreadsheet;
+using NPOI.SS.UserModel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.IO;
-using AntdUI;
 
 namespace ExcelToSql
 {
@@ -38,6 +40,17 @@ namespace ExcelToSql
             cmbPinyinMode.Items.Add(new AntdUI.SelectItem("首字母（如：PZRQ）"));
             cmbPinyinMode.SelectedIndex = 1; // 默认全拼
 
+            // 初始化编码下拉框
+            cmbEncoding.Items.Add(new AntdUI.SelectItem("UTF-8"));
+            cmbEncoding.Items.Add(new AntdUI.SelectItem("GBK"));
+            cmbEncoding.Items.Add(new AntdUI.SelectItem("GB2312"));
+            cmbEncoding.Items.Add(new AntdUI.SelectItem("ASCII"));
+            cmbEncoding.Items.Add(new AntdUI.SelectItem("Unicode"));
+            cmbEncoding.SelectedIndex = 0;
+
+            // 添加编码选择事件处理
+            cmbEncoding.SelectedValueChanged += CmbEncoding_SelectedValueChanged;
+
             // 设置默认列头行
             numHeaderRow.Value = 1;
 
@@ -45,7 +58,7 @@ namespace ExcelToSql
             dgvPreview.SetRowStyle += dgvPreview_SetRowStyle; ; 
         }
 
-        private Table.CellStyleInfo dgvPreview_SetRowStyle(object sender, TableSetRowStyleEventArgs e)
+        private AntdUI.Table.CellStyleInfo dgvPreview_SetRowStyle(object sender, TableSetRowStyleEventArgs e)
         {
             if (e.RowIndex == numHeaderRow.Value)
             {
@@ -104,6 +117,8 @@ namespace ExcelToSql
             // 加载新文件
             excelReader = new ExcelReader(filePath);
 
+            label7.Visible = cmbEncoding.Visible = excelReader.isCsvFile;
+
             // 获取Sheet列表
             List<string> sheets = excelReader.GetSheetNames();
             cmbSheets.Items.Clear();
@@ -115,6 +130,7 @@ namespace ExcelToSql
             if (cmbSheets.Items.Count > 0)
             {
                 cmbSheets.SelectedIndex = 0;
+                LoadPreview();
             }
         }
 
@@ -150,7 +166,7 @@ namespace ExcelToSql
             {
                 // 对于AntdUI的Select控件，我们需要获取实际的Sheet名称
                 // 假设我们可以通过某种方式获取到选中的值
-                DataTable dt = excelReader.PreviewSheet(cmbSheets.SelectedIndex, 50);
+                DataTable dt = excelReader.PreviewSheet(cmbSheets.SelectedIndex, 50, GetSelectedEncoding());
                 dgvPreview.DataSource = dt;
 
             }
@@ -194,7 +210,15 @@ namespace ExcelToSql
                 // 读取数据
                 int headerRowIndex = (int)numHeaderRow.Value - 1;
                 // 对于AntdUI的Select控件，我们需要获取实际的Sheet索引
-                currentData = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, true);
+                // 如果是CSV文件，则使用选定的编码
+                if (excelReader.isCsvFile)
+                {
+                    currentData = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, true, GetSelectedEncoding());
+                }
+                else
+                {
+                    currentData = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, true);
+                }
 
                 if (currentData.Rows.Count == 0)
                 {
@@ -313,5 +337,75 @@ namespace ExcelToSql
             //base.OnFormClosing(e);
         }
 
+        /// <summary>
+        /// 编码选择变更事件
+        /// </summary>
+        private void CmbEncoding_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (excelReader != null && excelReader.isCsvFile)
+            {
+                // 重新加载CSV数据
+                LoadPreview();
+            }
+        }
+
+        /// <summary>
+        /// 获取选择的编码
+        /// </summary>
+        /// <returns></returns>
+        private Encoding GetSelectedEncoding()
+        {
+            string encodingName = cmbEncoding.SelectedValue?.ToString() ?? "UTF-8";
+            
+            switch (encodingName)
+            {
+                case "UTF-8":
+                    return Encoding.UTF8;
+                case "GBK":
+                    return Encoding.GetEncoding("GBK");
+                case "GB2312":
+                    return Encoding.GetEncoding("GB2312");
+                case "ASCII":
+                    return Encoding.ASCII;
+                case "Unicode":
+                    return Encoding.Unicode;
+                default:
+                    return Encoding.UTF8;
+            }
+        }
+
+        /// <summary>
+        /// 读取Sheet数据
+        /// </summary>
+        private void LoadSheetData()
+        {
+            if (excelReader == null || cmbSheets.SelectedIndex < 0)
+                return;
+
+            try
+            {
+                // 设置拼音模式
+                PinyinHelper.CurrentMode = cmbPinyinMode.SelectedIndex == 0
+                    ? PinyinMode.FullPinyin
+                    : PinyinMode.FirstLetter;
+
+                // 读取数据
+                int headerRowIndex = (int)numHeaderRow.Value - 1;
+                // 对于AntdUI的Select控件，我们需要获取实际的Sheet索引
+                currentData = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, true, GetSelectedEncoding());
+
+            }
+            catch (Exception ex)
+            {
+                AntdUI.Modal.open(new AntdUI.Modal.Config(this,
+                 "错误",
+                 $"读取数据失败: {ex.Message}")
+                {
+                    Icon = TType.Error,
+                    //内边距
+                    Padding = new Size(24, 20),
+                });
+            }
+        }
     }
 }

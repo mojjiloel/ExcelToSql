@@ -16,8 +16,10 @@ namespace ExcelToSql
     {
         private IWorkbook workbook;
         private string filePath;
-        private bool isCsvFile;
+        public bool isCsvFile;
         private List<string[]> csvData;
+        // 用于存储当前编码
+        private Encoding currentEncoding = Encoding.UTF8;
 
         public ExcelReader(string filePath)
         {
@@ -27,7 +29,7 @@ namespace ExcelToSql
             
             if (isCsvFile)
             {
-                LoadCsvData();
+                LoadCsvData(currentEncoding);
             }
             else
             {
@@ -38,10 +40,13 @@ namespace ExcelToSql
         /// <summary>
         /// 加载CSV数据
         /// </summary>
-        private void LoadCsvData()
+        private void LoadCsvData(Encoding encoding)
         {
+            // 保存当前编码
+            currentEncoding = encoding;
+            
             csvData = new List<string[]>();
-            using (var reader = new StreamReader(filePath, Encoding.UTF8))
+            using (var reader = new StreamReader(filePath, encoding))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)
@@ -176,6 +181,29 @@ namespace ExcelToSql
         }
 
         /// <summary>
+        /// 读取指定Sheet到DataTable（支持编码参数）
+        /// </summary>
+        /// <param name="sheetIndex">Sheet索引</param>
+        /// <param name="headerRowIndex">列头行索引（0-based）</param>
+        /// <param name="convertColumnNames">是否转换列名为数据库兼容格式</param>
+        /// <param name="encoding">CSV文件编码</param>
+        public DataTable ReadSheet(int sheetIndex, int headerRowIndex, bool convertColumnNames = true, Encoding encoding = null)
+        {
+            if (isCsvFile)
+            {
+                // 如果是CSV文件且指定了编码，则重新加载数据
+                if (encoding != null)
+                {
+                    LoadCsvData(encoding);
+                }
+                return ReadCsvToDataTable(headerRowIndex, convertColumnNames);
+            }
+            
+            ISheet sheet = workbook.GetSheetAt(sheetIndex);
+            return ReadSheetToDataTable(sheet, headerRowIndex, convertColumnNames);
+        }
+
+        /// <summary>
         /// 预览Sheet数据（返回原始数据，不做转换）
         /// </summary>
         public DataTable PreviewSheet(int sheetIndex, int maxRows = 100)
@@ -231,6 +259,9 @@ namespace ExcelToSql
         /// </summary>
         private DataTable PreviewCsvData(int maxRows = 100)
         {
+            // 使用当前编码重新加载数据
+            LoadCsvData(GetCurrentEncoding());
+            
             DataTable dt = new DataTable();
 
             if (csvData.Count == 0)
@@ -267,6 +298,71 @@ namespace ExcelToSql
                     {
                         dr[j] = string.Empty;
                     }
+                }
+                dt.Rows.Add(dr);
+                rowCount++;
+            }
+
+            return dt;
+        }
+
+        /// <summary>
+        /// 获取当前编码（用于重新加载CSV数据）
+        /// </summary>
+        /// <returns></returns>
+        private Encoding GetCurrentEncoding()
+        {
+            return currentEncoding;
+        }
+
+        /// <summary>
+        /// 预览Sheet数据（支持编码参数）
+        /// </summary>
+        public DataTable PreviewSheet(int sheetIndex, int maxRows = 100, Encoding encoding = null)
+        {
+            if (isCsvFile)
+            {
+                // 如果是CSV文件且指定了编码，则重新加载数据
+                if (encoding != null)
+                {
+                    LoadCsvData(encoding);
+                }
+                return PreviewCsvData(maxRows);
+            }
+            
+            ISheet sheet = workbook.GetSheetAt(sheetIndex);
+            DataTable dt = new DataTable();
+
+            if (sheet.PhysicalNumberOfRows == 0)
+                return dt;
+
+            // 获取最大列数
+            int maxCols = 0;
+            for (int i = 0; i <= Math.Min(maxRows, sheet.LastRowNum); i++)
+            {
+                IRow row = sheet.GetRow(i);
+                if (row != null && row.LastCellNum > maxCols)
+                    maxCols = row.LastCellNum;
+            }
+
+            // 创建列
+            for (int i = 0; i < maxCols; i++)
+            {
+                dt.Columns.Add("Column" + (i + 1), typeof(string));
+            }
+
+            // 读取数据
+            int rowCount = 0;
+            for (int i = 0; i <= sheet.LastRowNum && rowCount < maxRows; i++)
+            {
+                IRow row = sheet.GetRow(i);
+                if (row == null) continue;
+
+                DataRow dr = dt.NewRow();
+                for (int j = 0; j < maxCols; j++)
+                {
+                    ICell cell = row.GetCell(j);
+                    dr[j] = GetCellValue(cell);
                 }
                 dt.Rows.Add(dr);
                 rowCount++;

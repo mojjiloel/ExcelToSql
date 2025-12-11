@@ -51,6 +51,8 @@
             this.btnCopy = new AntdUI.Button();
             this.btnSave = new AntdUI.Button();
             this.pageHeader1 = new AntdUI.PageHeader();
+            this.label7 = new AntdUI.Label();
+            this.cmbEncoding = new AntdUI.Select();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -107,6 +109,8 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel2.Controls.Add(this.numHeaderRow);
             this.panel2.Controls.Add(this.label3);
+            this.panel2.Controls.Add(this.cmbEncoding);
+            this.panel2.Controls.Add(this.label7);
             this.panel2.Controls.Add(this.cmbSheets);
             this.panel2.Controls.Add(this.label2);
             this.panel2.Controls.Add(this.dgvPreview);
@@ -305,6 +309,29 @@
             this.pageHeader1.TabIndex = 5;
             this.pageHeader1.Text = "Excel转SQL工具";
             // 
+            // label7
+            // 
+            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label7.BackColor = System.Drawing.SystemColors.Window;
+            this.label7.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label7.Location = new System.Drawing.Point(711, 14);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(88, 45);
+            this.label7.TabIndex = 1;
+            this.label7.Text = "CSV文件编码：";
+            this.label7.Visible = false;
+            // 
+            // cmbEncoding
+            // 
+            this.cmbEncoding.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbEncoding.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.cmbEncoding.Location = new System.Drawing.Point(805, 14);
+            this.cmbEncoding.Name = "cmbEncoding";
+            this.cmbEncoding.Size = new System.Drawing.Size(150, 45);
+            this.cmbEncoding.TabIndex = 2;
+            this.cmbEncoding.Visible = false;
+            this.cmbEncoding.SelectedIndexChanged += new AntdUI.IntEventHandler(this.cmbSheets_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -351,6 +378,8 @@
         private AntdUI.Button btnCopy;
         private AntdUI.Button btnSave;
         private AntdUI.PageHeader pageHeader1;
+        private AntdUI.Select cmbEncoding;
+        private AntdUI.Label label7;
     }
 }
 
