@@ -36,6 +36,8 @@
             this.panel2 = new AntdUI.Panel();
             this.numHeaderRow = new AntdUI.InputNumber();
             this.label3 = new AntdUI.Label();
+            this.cmbEncoding = new AntdUI.Select();
+            this.label7 = new AntdUI.Label();
             this.cmbSheets = new AntdUI.Select();
             this.label2 = new AntdUI.Label();
             this.dgvPreview = new AntdUI.Table();
@@ -46,13 +48,12 @@
             this.label5 = new AntdUI.Label();
             this.cmbDatabase = new AntdUI.Select();
             this.label4 = new AntdUI.Label();
+            this.btnSetColType = new AntdUI.Button();
             this.btnGenerate = new AntdUI.Button();
             this.txtSqlOutput = new AntdUI.Input();
             this.btnCopy = new AntdUI.Button();
             this.btnSave = new AntdUI.Button();
             this.pageHeader1 = new AntdUI.PageHeader();
-            this.label7 = new AntdUI.Label();
-            this.cmbEncoding = new AntdUI.Select();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -145,6 +146,29 @@
             this.label3.TabIndex = 3;
             this.label3.Text = "列头行号(1起)";
             // 
+            // cmbEncoding
+            // 
+            this.cmbEncoding.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbEncoding.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.cmbEncoding.Location = new System.Drawing.Point(805, 14);
+            this.cmbEncoding.Name = "cmbEncoding";
+            this.cmbEncoding.Size = new System.Drawing.Size(150, 45);
+            this.cmbEncoding.TabIndex = 2;
+            this.cmbEncoding.Visible = false;
+            this.cmbEncoding.SelectedIndexChanged += new AntdUI.IntEventHandler(this.cmbSheets_SelectedIndexChanged);
+            // 
+            // label7
+            // 
+            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label7.BackColor = System.Drawing.SystemColors.Window;
+            this.label7.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label7.Location = new System.Drawing.Point(711, 14);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(88, 45);
+            this.label7.TabIndex = 1;
+            this.label7.Text = "CSV文件编码：";
+            this.label7.Visible = false;
+            // 
             // cmbSheets
             // 
             this.cmbSheets.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -187,6 +211,7 @@
             this.panel3.Controls.Add(this.label5);
             this.panel3.Controls.Add(this.cmbDatabase);
             this.panel3.Controls.Add(this.label4);
+            this.panel3.Controls.Add(this.btnSetColType);
             this.panel3.Controls.Add(this.btnGenerate);
             this.panel3.Controls.Add(this.txtSqlOutput);
             this.panel3.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -197,7 +222,7 @@
             // 
             // cmbPinyinMode
             // 
-            this.cmbPinyinMode.Location = new System.Drawing.Point(828, 13);
+            this.cmbPinyinMode.Location = new System.Drawing.Point(552, 13);
             this.cmbPinyinMode.Name = "cmbPinyinMode";
             this.cmbPinyinMode.Size = new System.Drawing.Size(127, 45);
             this.cmbPinyinMode.TabIndex = 7;
@@ -205,7 +230,7 @@
             // label6
             // 
             this.label6.BackColor = System.Drawing.SystemColors.Window;
-            this.label6.Location = new System.Drawing.Point(720, 13);
+            this.label6.Location = new System.Drawing.Point(486, 13);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(100, 45);
             this.label6.TabIndex = 6;
@@ -214,7 +239,7 @@
             // txtTableName
             // 
             this.txtTableName.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txtTableName.Location = new System.Drawing.Point(368, 13);
+            this.txtTableName.Location = new System.Drawing.Point(318, 13);
             this.txtTableName.Name = "txtTableName";
             this.txtTableName.Size = new System.Drawing.Size(150, 45);
             this.txtTableName.TabIndex = 5;
@@ -224,7 +249,7 @@
             // 
             this.label5.BackColor = System.Drawing.SystemColors.Window;
             this.label5.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label5.Location = new System.Drawing.Point(309, 13);
+            this.label5.Location = new System.Drawing.Point(259, 13);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(53, 45);
             this.label5.TabIndex = 4;
@@ -233,7 +258,7 @@
             // cmbDatabase
             // 
             this.cmbDatabase.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.cmbDatabase.Location = new System.Drawing.Point(140, 13);
+            this.cmbDatabase.Location = new System.Drawing.Point(90, 13);
             this.cmbDatabase.Name = "cmbDatabase";
             this.cmbDatabase.Size = new System.Drawing.Size(150, 45);
             this.cmbDatabase.TabIndex = 3;
@@ -248,10 +273,20 @@
             this.label4.TabIndex = 2;
             this.label4.Text = "数据库类型：";
             // 
+            // btnSetColType
+            // 
+            this.btnSetColType.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnSetColType.Location = new System.Drawing.Point(712, 13);
+            this.btnSetColType.Name = "btnSetColType";
+            this.btnSetColType.Size = new System.Drawing.Size(125, 45);
+            this.btnSetColType.TabIndex = 1;
+            this.btnSetColType.Text = "设置列类型";
+            this.btnSetColType.Type = AntdUI.TTypeMini.Primary;
+            // 
             // btnGenerate
             // 
             this.btnGenerate.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btnGenerate.Location = new System.Drawing.Point(536, 13);
+            this.btnGenerate.Location = new System.Drawing.Point(843, 13);
             this.btnGenerate.Name = "btnGenerate";
             this.btnGenerate.Size = new System.Drawing.Size(125, 45);
             this.btnGenerate.TabIndex = 1;
@@ -309,29 +344,6 @@
             this.pageHeader1.TabIndex = 5;
             this.pageHeader1.Text = "Excel转SQL工具";
             // 
-            // label7
-            // 
-            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label7.BackColor = System.Drawing.SystemColors.Window;
-            this.label7.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label7.Location = new System.Drawing.Point(711, 14);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(88, 45);
-            this.label7.TabIndex = 1;
-            this.label7.Text = "CSV文件编码：";
-            this.label7.Visible = false;
-            // 
-            // cmbEncoding
-            // 
-            this.cmbEncoding.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmbEncoding.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.cmbEncoding.Location = new System.Drawing.Point(805, 14);
-            this.cmbEncoding.Name = "cmbEncoding";
-            this.cmbEncoding.Size = new System.Drawing.Size(150, 45);
-            this.cmbEncoding.TabIndex = 2;
-            this.cmbEncoding.Visible = false;
-            this.cmbEncoding.SelectedIndexChanged += new AntdUI.IntEventHandler(this.cmbSheets_SelectedIndexChanged);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -380,6 +392,7 @@
         private AntdUI.PageHeader pageHeader1;
         private AntdUI.Select cmbEncoding;
         private AntdUI.Label label7;
+        private AntdUI.Button btnSetColType;
     }
 }
 

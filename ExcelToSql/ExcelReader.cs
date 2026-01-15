@@ -18,8 +18,6 @@ namespace ExcelToSql
         private string filePath;
         public bool isCsvFile;
         private List<string[]> csvData;
-        // 用于存储当前编码
-        private Encoding currentEncoding = Encoding.UTF8;
 
         public ExcelReader(string filePath)
         {
@@ -29,7 +27,7 @@ namespace ExcelToSql
             
             if (isCsvFile)
             {
-                LoadCsvData(currentEncoding);
+                LoadCsvData(Encoding.UTF8);
             }
             else
             {
@@ -42,9 +40,6 @@ namespace ExcelToSql
         /// </summary>
         private void LoadCsvData(Encoding encoding)
         {
-            // 保存当前编码
-            currentEncoding = encoding;
-            
             csvData = new List<string[]>();
             using (var reader = new StreamReader(filePath, encoding))
             {
@@ -312,7 +307,8 @@ namespace ExcelToSql
         /// <returns></returns>
         private Encoding GetCurrentEncoding()
         {
-            return currentEncoding;
+            // 这里应该从外部传入编码，暂时返回UTF8作为默认值
+            return Encoding.UTF8;
         }
 
         /// <summary>
@@ -409,7 +405,8 @@ namespace ExcelToSql
                 }
                 
                 columnNames[i] = uniqueName;
-                dt.Columns.Add(uniqueName, typeof(string));
+                var column = new DataColumn(uniqueName, typeof(string)) { Caption = columnName };
+                dt.Columns.Add(column);
             }
 
             // 读取数据行（从列头的下一行开始）
@@ -469,7 +466,7 @@ namespace ExcelToSql
             {
                 ICell cell = headerRow.GetCell(i);
                 string columnName = GetCellValue(cell);
-                
+                string originalColumnName = columnName;
                 if (string.IsNullOrWhiteSpace(columnName))
                     columnName = "Column" + (i + 1);
 
@@ -486,7 +483,8 @@ namespace ExcelToSql
                 }
                 
                 columnNames[i] = uniqueName;
-                dt.Columns.Add(uniqueName, typeof(string));
+                var column = new DataColumn(uniqueName, typeof(string)) { Caption = originalColumnName };
+                dt.Columns.Add(column);
             }
 
             // 读取数据行（从列头的下一行开始）

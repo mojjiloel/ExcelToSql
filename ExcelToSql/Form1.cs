@@ -17,6 +17,7 @@ namespace ExcelToSql
     {
         private ExcelReader excelReader;
         private DataTable currentData;
+        private Dictionary<string, ExcelToSql.ColumnSettingInfo> columnSettings;
 
         public Form1()
         {
@@ -55,7 +56,53 @@ namespace ExcelToSql
             numHeaderRow.Value = 1;
 
             // 列头行 高亮
-            dgvPreview.SetRowStyle += dgvPreview_SetRowStyle; ; 
+            dgvPreview.SetRowStyle += dgvPreview_SetRowStyle;
+            btnSetColType.Click += btnSetColType_Click;
+        }
+
+        private void btnSetColType_Click(object sender, EventArgs e)
+        {
+            // 根据列头行，加载列信息 传入设置界面
+            if (excelReader == null || cmbSheets.SelectedIndex < 0)
+            {
+                Alert("请先选择Excel文件和Sheet", "提示", TType.Warn);
+                return;
+            }
+            
+            try
+            {
+                PinyinHelper.CurrentMode = cmbPinyinMode.SelectedIndex == 0
+                    ? PinyinMode.FullPinyin
+                    : PinyinMode.FirstLetter;
+
+                // 获取当前预览数据以获取列头信息
+                int headerRowIndex = (int)numHeaderRow.Value - 1;
+                DataTable dt = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, true, GetSelectedEncoding());
+
+                // 构建列字典
+                Dictionary<string, ColumnSettingInfo> colsDict = new Dictionary<string, ColumnSettingInfo>();
+                foreach (DataColumn col in dt.Columns)
+                {
+                    // 默认将所有列设为字符串类型
+                    colsDict[col.Caption] = new ColumnSettingInfo
+                    {
+                        ColumnName = col.ColumnName,
+                        DisplayName = col.Caption,
+                        ColumnType = "字符串",
+                        IsEnabled = true,
+                    };
+                }
+                
+                // 创建ColumnSetting控件并订阅事件
+                var columnSetting = new ColumnSetting(this, colsDict) { Size = new Size(450, 300) };
+                columnSetting.OnColumnSettingsSaved += ColumnSetting_OnColumnSettingsSaved;
+                
+                AntdUI.Popover.open(new AntdUI.Popover.Config(btnSetColType, columnSetting) { });
+            }
+            catch (Exception ex)
+            {
+                Alert($"加载列信息失败: {ex.Message}", "错误", TType.Error);
+            }
         }
 
         private AntdUI.Table.CellStyleInfo dgvPreview_SetRowStyle(object sender, TableSetRowStyleEventArgs e)
@@ -68,6 +115,12 @@ namespace ExcelToSql
                 };
             }
             return null;
+        }
+
+        private void ColumnSetting_OnColumnSettingsSaved(Dictionary<string, ColumnSettingInfo> settings)
+        {
+            columnSettings = settings;
+            Alert("列设置已保存", "提示", TType.Success);
         }
 
         /// <summary>
@@ -164,8 +217,6 @@ namespace ExcelToSql
 
             try
             {
-                // 对于AntdUI的Select控件，我们需要获取实际的Sheet名称
-                // 假设我们可以通过某种方式获取到选中的值
                 DataTable dt = excelReader.PreviewSheet(cmbSheets.SelectedIndex, 50, GetSelectedEncoding());
                 dgvPreview.DataSource = dt;
 
@@ -210,15 +261,7 @@ namespace ExcelToSql
                 // 读取数据
                 int headerRowIndex = (int)numHeaderRow.Value - 1;
                 // 对于AntdUI的Select控件，我们需要获取实际的Sheet索引
-                // 如果是CSV文件，则使用选定的编码
-                if (excelReader.isCsvFile)
-                {
-                    currentData = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, true, GetSelectedEncoding());
-                }
-                else
-                {
-                    currentData = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, true);
-                }
+                currentData = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, true, GetSelectedEncoding());
 
                 if (currentData.Rows.Count == 0)
                 {
@@ -241,15 +284,28 @@ namespace ExcelToSql
                         break;
                 }
 
+
+
                 // 生成SQL
-                SqlGenerator generator = SqlGenerator.Create(dbType, txtTableName.Text, currentData);
+                SqlGenerator generator;
+                if (columnSettings != null && columnSettings.Count > 0)
+                {
+                    generator = SqlGenerator.Create(dbType, txtTableName.Text, currentData, columnSettings);
+                }
+                else
+                {
+                    generator = SqlGenerator.Create(dbType, txtTableName.Text, currentData);
+                }
                 string sql = generator.GenerateSql();
                 txtSqlOutput.Text = sql;
 
-                string modeText = cmbPinyinMode.SelectedIndex == 0 ? "全拼" : "首字母";
-                Alert(string.Format("SQL生成成功！\r\n\r\n表名：{0}\r\n列数：{1}\r\n行数：{2}\r\n拼音模式：{3}",
-                        txtTableName.Text, currentData.Columns.Count, currentData.Rows.Count, modeText),
-                    "成功", TType.Success);
+                //string modeText = cmbPinyinMode.SelectedIndex == 0 ? "全拼" : "首字母";
+                //Alert(string.Format("SQL生成成功！\r\n\r\n表名：{0}\r\n列数：{1}\r\n行数：{2}\r\n拼音模式：{3}",
+                //        txtTableName.Text, currentData.Columns.Count, currentData.Rows.Count, modeText),
+                //    "成功", TType.Success);
+
+                //Alert("SQL生成成功！",
+                //    "成功", TType.Success);
             }
             catch (Exception ex)
             {
@@ -407,5 +463,7 @@ namespace ExcelToSql
                 });
             }
         }
+
     }
+
 }
