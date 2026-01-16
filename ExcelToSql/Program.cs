@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -13,6 +14,9 @@ namespace ExcelToSql
         [STAThread]
         static void Main()
         {
+            AntdUI.Config.TextRenderingHighQuality = true;
+            AntdUI.Config.Font = new Font("Microsoft YaHei UI", 10);
+            AntdUI.Config.SetCorrectionTextRendering("Microsoft YaHei UI", "宋体");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

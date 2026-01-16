@@ -12,7 +12,7 @@ namespace ExcelToSql
     /// <summary>
     /// Excel读取辅助类
     /// </summary>
-    public class ExcelReader
+    public class ExcelReader : IDisposable
     {
         private IWorkbook workbook;
         private string filePath;
@@ -104,21 +104,20 @@ namespace ExcelToSql
         /// </summary>
         private void LoadWorkbook()
         {
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            string extension = Path.GetExtension(filePath).ToLower();
+            try
             {
-                string extension = Path.GetExtension(filePath).ToLower();
-                if (extension == ".xls")
+                // 使用WorkbookFactory自动检测文件格式，支持.xls和.xlsx
+                workbook = NPOI.SS.UserModel.WorkbookFactory.Create(fs);
+            }
+            catch
+            {
+                if (fs != null)
                 {
-                    workbook = new HSSFWorkbook(fs);
+                    fs.Dispose();
                 }
-                else if (extension == ".xlsx")
-                {
-                    workbook = new XSSFWorkbook(fs);
-                }
-                else
-                {
-                    throw new Exception("不支持的文件格式，仅支持.xls、.xlsx和.csv文件");
-                }
+                throw;
             }
         }
 
@@ -155,7 +154,7 @@ namespace ExcelToSql
             }
             
             ISheet sheet = workbook.GetSheetAt(sheetIndex);
-            return ReadSheetToDataTable(sheet, headerRowIndex, convertColumnNames);
+            return ReadSheetCommonLogic(sheet, headerRowIndex, convertColumnNames, -1); 
         }
 
         /// <summary>
@@ -172,7 +171,7 @@ namespace ExcelToSql
             if (sheet == null)
                 throw new Exception("未找到指定的Sheet: " + sheetName);
             
-            return ReadSheetToDataTable(sheet, headerRowIndex, convertColumnNames);
+            return ReadSheetCommonLogic(sheet, headerRowIndex, convertColumnNames, -1);
         }
 
         /// <summary>
@@ -182,7 +181,7 @@ namespace ExcelToSql
         /// <param name="headerRowIndex">列头行索引（0-based）</param>
         /// <param name="convertColumnNames">是否转换列名为数据库兼容格式</param>
         /// <param name="encoding">CSV文件编码</param>
-        public DataTable ReadSheet(int sheetIndex, int headerRowIndex, bool convertColumnNames = true, Encoding encoding = null)
+        public DataTable ReadSheet(int sheetIndex, int headerRowIndex, int maxRows = -1, bool convertColumnNames = true, Encoding encoding = null)
         {
             if (isCsvFile)
             {
@@ -195,7 +194,7 @@ namespace ExcelToSql
             }
             
             ISheet sheet = workbook.GetSheetAt(sheetIndex);
-            return ReadSheetToDataTable(sheet, headerRowIndex, convertColumnNames);
+            return ReadSheetCommonLogic(sheet, headerRowIndex, convertColumnNames, maxRows);
         }
 
         /// <summary>
@@ -209,44 +208,7 @@ namespace ExcelToSql
             }
             
             ISheet sheet = workbook.GetSheetAt(sheetIndex);
-            DataTable dt = new DataTable();
-
-            if (sheet.PhysicalNumberOfRows == 0)
-                return dt;
-
-            // 获取最大列数
-            int maxCols = 0;
-            for (int i = 0; i <= Math.Min(maxRows, sheet.LastRowNum); i++)
-            {
-                IRow row = sheet.GetRow(i);
-                if (row != null && row.LastCellNum > maxCols)
-                    maxCols = row.LastCellNum;
-            }
-
-            // 创建列
-            for (int i = 0; i < maxCols; i++)
-            {
-                dt.Columns.Add("Column" + (i + 1), typeof(string));
-            }
-
-            // 读取数据
-            int rowCount = 0;
-            for (int i = 0; i <= sheet.LastRowNum && rowCount < maxRows; i++)
-            {
-                IRow row = sheet.GetRow(i);
-                if (row == null) continue;
-
-                DataRow dr = dt.NewRow();
-                for (int j = 0; j < maxCols; j++)
-                {
-                    ICell cell = row.GetCell(j);
-                    dr[j] = GetCellValue(cell);
-                }
-                dt.Rows.Add(dr);
-                rowCount++;
-            }
-
-            return dt;
+            return ReadSheetCommonLogic(sheet, 0, false, maxRows);
         }
 
         /// <summary>
@@ -254,9 +216,6 @@ namespace ExcelToSql
         /// </summary>
         private DataTable PreviewCsvData(int maxRows = 100)
         {
-            // 使用当前编码重新加载数据
-            LoadCsvData(GetCurrentEncoding());
-            
             DataTable dt = new DataTable();
 
             if (csvData.Count == 0)
@@ -302,16 +261,6 @@ namespace ExcelToSql
         }
 
         /// <summary>
-        /// 获取当前编码（用于重新加载CSV数据）
-        /// </summary>
-        /// <returns></returns>
-        private Encoding GetCurrentEncoding()
-        {
-            // 这里应该从外部传入编码，暂时返回UTF8作为默认值
-            return Encoding.UTF8;
-        }
-
-        /// <summary>
         /// 预览Sheet数据（支持编码参数）
         /// </summary>
         public DataTable PreviewSheet(int sheetIndex, int maxRows = 100, Encoding encoding = null)
@@ -327,32 +276,117 @@ namespace ExcelToSql
             }
             
             ISheet sheet = workbook.GetSheetAt(sheetIndex);
+            return ReadSheetCommonLogic(sheet, 0, false, maxRows);
+        }
+        
+        /// <summary>
+        /// 通用的Sheet读取逻辑
+        /// </summary>
+        /// <param name="sheet">工作表</param>
+        /// <param name="headerRowIndex">列头行索引（0-based）</param>
+        /// <param name="convertColumnNames">是否转换列名为数据库兼容格式</param>
+        /// <param name="maxRows">最大读取行数，-1表示读取全部</param>
+        private DataTable ReadSheetCommonLogic(ISheet sheet, int headerRowIndex, bool convertColumnNames, int maxRows = -1)
+        {
             DataTable dt = new DataTable();
 
             if (sheet.PhysicalNumberOfRows == 0)
                 return dt;
 
+            // 确定要处理的最大行数
+            int lastRowNum = maxRows == -1 ? sheet.LastRowNum : Math.Min(maxRows - 1, sheet.LastRowNum);
+            
             // 获取最大列数
             int maxCols = 0;
-            for (int i = 0; i <= Math.Min(maxRows, sheet.LastRowNum); i++)
+            for (int i = 0; i <= Math.Min(lastRowNum, sheet.LastRowNum); i++)
             {
                 IRow row = sheet.GetRow(i);
                 if (row != null && row.LastCellNum > maxCols)
                     maxCols = row.LastCellNum;
             }
 
-            // 创建列
-            for (int i = 0; i < maxCols; i++)
+            // 如果是预览模式（不使用列头或不转换列名），直接创建列
+            if (!convertColumnNames)
             {
-                dt.Columns.Add("Column" + (i + 1), typeof(string));
+                for (int i = 0; i < maxCols; i++)
+                {
+                    dt.Columns.Add("Column" + (i + 1), typeof(string));
+                }
+            }
+            else
+            {
+                // 读取列头
+                IRow headerRow = sheet.GetRow(headerRowIndex);
+                if (headerRow == null)
+                    throw new Exception("指定的列头行不存在");
+
+                Dictionary<int, string> columnNames = new Dictionary<int, string>();
+                for (int i = 0; i < headerRow.LastCellNum; i++)
+                {
+                    ICell cell = headerRow.GetCell(i);
+                    string columnName = GetCellValue(cell);
+                    string originalColumnName = columnName;
+                    if (string.IsNullOrWhiteSpace(columnName))
+                        columnName = "Column" + (i + 1);
+
+                    if (convertColumnNames)
+                        columnName = PinyinHelper.ConvertToDbColumnName(columnName);
+                    
+                    // 确保列名唯一
+                    string uniqueName = columnName;
+                    int counter = 1;
+                    while (columnNames.ContainsValue(uniqueName))
+                    {
+                        uniqueName = columnName + counter;
+                        counter++;
+                    }
+                    
+                    columnNames[i] = uniqueName;
+                    var column = new DataColumn(uniqueName, typeof(string)) { Caption = originalColumnName };
+                    dt.Columns.Add(column);
+                }
             }
 
-            // 读取数据
+            // 读取数据行
             int rowCount = 0;
-            for (int i = 0; i <= sheet.LastRowNum && rowCount < maxRows; i++)
+            int startRow = convertColumnNames ? headerRowIndex + 1 : 0;
+            
+            for (int i = startRow; i <= sheet.LastRowNum && (maxRows == -1 || rowCount < maxRows); i++)
             {
                 IRow row = sheet.GetRow(i);
                 if (row == null) continue;
+
+                // 检查是否为空行
+                bool isEmptyRow = true;
+                if (convertColumnNames) // 只在需要列名转换时才进行空行检查
+                {
+                    IRow headerRow = sheet.GetRow(headerRowIndex);
+                    for (int j = 0; j < headerRow.LastCellNum; j++)
+                    {
+                        ICell cell = row.GetCell(j);
+                        if (cell != null && cell.CellType != CellType.Blank)
+                        {
+                            isEmptyRow = false;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    // 预览模式下，只要有一列有值就不算空行
+                    for (int j = 0; j < maxCols; j++)
+                    {
+                        ICell cell = row.GetCell(j);
+                        if (cell != null && cell.CellType != CellType.Blank)
+                        {
+                            isEmptyRow = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (isEmptyRow)
+                    continue;
 
                 DataRow dr = dt.NewRow();
                 for (int j = 0; j < maxCols; j++)
@@ -423,7 +457,7 @@ namespace ExcelToSql
                         isEmptyRow = false;
                         break;
                     }
-                }
+                } 
 
                 if (isEmptyRow)
                     continue;
@@ -439,80 +473,6 @@ namespace ExcelToSql
                     {
                         dr[columnNames[j]] = string.Empty;
                     }
-                }
-                dt.Rows.Add(dr);
-            }
-
-            return dt;
-        }
-
-        /// <summary>
-        /// 将Sheet转换为DataTable
-        /// </summary>
-        private DataTable ReadSheetToDataTable(ISheet sheet, int headerRowIndex, bool convertColumnNames)
-        {
-            DataTable dt = new DataTable();
-
-            if (sheet.PhysicalNumberOfRows == 0)
-                return dt;
-
-            // 读取列头
-            IRow headerRow = sheet.GetRow(headerRowIndex);
-            if (headerRow == null)
-                throw new Exception("指定的列头行不存在");
-
-            Dictionary<int, string> columnNames = new Dictionary<int, string>();
-            for (int i = 0; i < headerRow.LastCellNum; i++)
-            {
-                ICell cell = headerRow.GetCell(i);
-                string columnName = GetCellValue(cell);
-                string originalColumnName = columnName;
-                if (string.IsNullOrWhiteSpace(columnName))
-                    columnName = "Column" + (i + 1);
-
-                if (convertColumnNames)
-                    columnName = PinyinHelper.ConvertToDbColumnName(columnName);
-                
-                // 确保列名唯一
-                string uniqueName = columnName;
-                int counter = 1;
-                while (columnNames.ContainsValue(uniqueName))
-                {
-                    uniqueName = columnName + counter;
-                    counter++;
-                }
-                
-                columnNames[i] = uniqueName;
-                var column = new DataColumn(uniqueName, typeof(string)) { Caption = originalColumnName };
-                dt.Columns.Add(column);
-            }
-
-            // 读取数据行（从列头的下一行开始）
-            for (int i = headerRowIndex + 1; i <= sheet.LastRowNum; i++)
-            {
-                IRow row = sheet.GetRow(i);
-                if (row == null) continue;
-
-                // 检查是否为空行
-                bool isEmptyRow = true;
-                for (int j = 0; j < headerRow.LastCellNum; j++)
-                {
-                    ICell cell = row.GetCell(j);
-                    if (cell != null && cell.CellType != CellType.Blank)
-                    {
-                        isEmptyRow = false;
-                        break;
-                    }
-                }
-
-                if (isEmptyRow)
-                    continue;
-
-                DataRow dr = dt.NewRow();
-                for (int j = 0; j < headerRow.LastCellNum; j++)
-                {
-                    ICell cell = row.GetCell(j);
-                    dr[columnNames[j]] = GetCellValue(cell);
                 }
                 dt.Rows.Add(dr);
             }
@@ -571,6 +531,11 @@ namespace ExcelToSql
                 workbook.Close();
                 workbook = null;
             }
+        }
+        
+        public void Dispose()
+        {
+            Close();
         }
     }
 }

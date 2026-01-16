@@ -278,6 +278,7 @@
             this.btnSetColType.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnSetColType.Location = new System.Drawing.Point(712, 13);
             this.btnSetColType.Name = "btnSetColType";
+            this.btnSetColType.ShowArrow = true;
             this.btnSetColType.Size = new System.Drawing.Size(125, 45);
             this.btnSetColType.TabIndex = 1;
             this.btnSetColType.Text = "设置列类型";

@@ -9,6 +9,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace ExcelToSql
@@ -68,41 +69,54 @@ namespace ExcelToSql
                 Alert("请先选择Excel文件和Sheet", "提示", TType.Warn);
                 return;
             }
-            
-            try
+
+
+            AntdUI.Button btn = (AntdUI.Button)sender;
+            btn.LoadingWaveValue = 0;
+            btn.Loading = true;
+            AntdUI.ITask.Run(() =>
             {
-                PinyinHelper.CurrentMode = cmbPinyinMode.SelectedIndex == 0
-                    ? PinyinMode.FullPinyin
-                    : PinyinMode.FirstLetter;
-
-                // 获取当前预览数据以获取列头信息
-                int headerRowIndex = (int)numHeaderRow.Value - 1;
-                DataTable dt = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, true, GetSelectedEncoding());
-
-                // 构建列字典
-                Dictionary<string, ColumnSettingInfo> colsDict = new Dictionary<string, ColumnSettingInfo>();
-                foreach (DataColumn col in dt.Columns)
+                try
                 {
-                    // 默认将所有列设为字符串类型
-                    colsDict[col.Caption] = new ColumnSettingInfo
+                    btn.LoadingWaveValue = 0.3F;
+                    PinyinHelper.CurrentMode = cmbPinyinMode.SelectedIndex == 0
+                        ? PinyinMode.FullPinyin
+                        : PinyinMode.FirstLetter;
+
+                    // 获取Excel数据以获取列头信息
+                    int headerRowIndex = (int)numHeaderRow.Value - 1;
+                    DataTable dt = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, 1, true, GetSelectedEncoding());
+
+                    btn.LoadingWaveValue = 0.5F;
+                    // 构建列字典
+                    Dictionary<string, ColumnSettingInfo> colsDict = new Dictionary<string, ColumnSettingInfo>();
+                    foreach (DataColumn col in dt.Columns)
                     {
-                        ColumnName = col.ColumnName,
-                        DisplayName = col.Caption,
-                        ColumnType = "字符串",
-                        IsEnabled = true,
-                    };
+                        // 默认将所有列设为字符串类型
+                        colsDict[col.Caption] = new ColumnSettingInfo
+                        {
+                            ColumnName = col.ColumnName,
+                            DisplayName = col.Caption,
+                            ColumnType = "字符串",
+                            IsEnabled = true,
+                        };
+                    }
+                    btn.LoadingWaveValue = 0.7F;
+                    // 创建ColumnSetting控件并订阅事件
+                    var columnSetting = new ColumnSetting(this, colsDict) { Size = new Size(450, 300) };
+                    columnSetting.OnColumnSettingsSaved += ColumnSetting_OnColumnSettingsSaved;
+                    btn.LoadingWaveValue = 1F;
+                    AntdUI.Popover.open(new AntdUI.Popover.Config(btnSetColType, columnSetting) { });
                 }
-                
-                // 创建ColumnSetting控件并订阅事件
-                var columnSetting = new ColumnSetting(this, colsDict) { Size = new Size(450, 300) };
-                columnSetting.OnColumnSettingsSaved += ColumnSetting_OnColumnSettingsSaved;
-                
-                AntdUI.Popover.open(new AntdUI.Popover.Config(btnSetColType, columnSetting) { });
-            }
-            catch (Exception ex)
+                catch (Exception ex)
+                {
+                    Alert($"加载列信息失败: {ex.Message}", "错误", TType.Error);
+                }
+            }, () =>
             {
-                Alert($"加载列信息失败: {ex.Message}", "错误", TType.Error);
-            }
+                if (btn.IsDisposed) return;
+                btn.Loading = false;
+            });
         }
 
         private AntdUI.Table.CellStyleInfo dgvPreview_SetRowStyle(object sender, TableSetRowStyleEventArgs e)
@@ -261,7 +275,7 @@ namespace ExcelToSql
                 // 读取数据
                 int headerRowIndex = (int)numHeaderRow.Value - 1;
                 // 对于AntdUI的Select控件，我们需要获取实际的Sheet索引
-                currentData = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, true, GetSelectedEncoding());
+                currentData = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, -1,true, GetSelectedEncoding());
 
                 if (currentData.Rows.Count == 0)
                 {
@@ -448,7 +462,7 @@ namespace ExcelToSql
                 // 读取数据
                 int headerRowIndex = (int)numHeaderRow.Value - 1;
                 // 对于AntdUI的Select控件，我们需要获取实际的Sheet索引
-                currentData = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, true, GetSelectedEncoding());
+                currentData = excelReader.ReadSheet(cmbSheets.SelectedIndex, headerRowIndex, -1, true, GetSelectedEncoding());
 
             }
             catch (Exception ex)
