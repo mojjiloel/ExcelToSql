@@ -399,9 +399,7 @@ namespace ExcelToSql
 
             if (dataType == typeof(int) || dataType == typeof(long) ||
                 dataType == typeof(decimal) || dataType == typeof(double) || dataType == typeof(float))
-            {
                 return Convert.ToDecimal(value).ToString();
-            }
 
             if (dataType == typeof(bool))
                 return ((bool)value) ? "1" : "0";
@@ -553,7 +551,7 @@ namespace ExcelToSql
 
             if (dataType == typeof(int) || dataType == typeof(long) || 
                 dataType == typeof(decimal) || dataType == typeof(double) || dataType == typeof(float))
-                return value.ToString();
+                return Convert.ToDecimal(value).ToString();
 
             if (dataType == typeof(bool))
                 return ((bool)value) ? "1" : "0";
@@ -711,7 +709,7 @@ namespace ExcelToSql
 
             if (dataType == typeof(int) || dataType == typeof(long) || 
                 dataType == typeof(decimal) || dataType == typeof(double) || dataType == typeof(float))
-                return value.ToString();
+                return Convert.ToDecimal(value).ToString();
 
             if (dataType == typeof(bool))
                 return ((bool)value) ? "1" : "0";
