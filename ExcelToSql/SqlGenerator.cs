@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Text;
 
 namespace ExcelToSql
@@ -396,9 +397,11 @@ namespace ExcelToSql
             if (value == null || value == DBNull.Value)
                 return "NULL";
 
-            if (dataType == typeof(int) || dataType == typeof(long) || 
+            if (dataType == typeof(int) || dataType == typeof(long) ||
                 dataType == typeof(decimal) || dataType == typeof(double) || dataType == typeof(float))
-                return value.ToString();
+            {
+                return Convert.ToDecimal(value).ToString();
+            }
 
             if (dataType == typeof(bool))
                 return ((bool)value) ? "1" : "0";
