@@ -1,11 +1,13 @@
+using Microsoft.VisualBasic.FileIO;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Text;
-using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
+using System.Windows.Forms.VisualStyles;
 
 namespace ExcelToSql
 {
@@ -35,19 +37,24 @@ namespace ExcelToSql
             }
         }
 
-        /// <summary>
-        /// 加载CSV数据
-        /// </summary>
         private void LoadCsvData(Encoding encoding)
         {
             csvData = new List<string[]>();
-            using (var reader = new StreamReader(filePath, encoding))
+
+            using (var parser = new TextFieldParser(filePath, encoding))
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                parser.TextFieldType = FieldType.Delimited;
+                parser.SetDelimiters(",");
+                parser.HasFieldsEnclosedInQuotes = true;   // 支持双引号字段
+                parser.TrimWhiteSpace = false;             // 保留字段前后空格
+
+                while (!parser.EndOfData)
                 {
-                    string[] values = ParseCsvLine(line);
-                    csvData.Add(values);
+                    string[] fields = parser.ReadFields();
+                    if (fields != null)
+                    {
+                        csvData.Add(fields);
+                    }
                 }
             }
         }
